@@ -3,9 +3,11 @@
 import os
 from PySide6.QtCore import QSettings
 
+from .audio import DEFAULT_SOUND
+
 APP_NAME = "EDBio"
 ORGANIZATION = "EDBio"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 DEFAULT_JOURNAL_DIR = os.path.join(
     os.environ.get("USERPROFILE", ""),
@@ -91,3 +93,27 @@ class Settings:
 
     def set_last_commander(self, name):
         self.set("last_commander", name)
+
+    def sound_enabled(self):
+        return bool(self.get("sound_enabled", True))
+
+    def set_sound_enabled(self, value):
+        self.set("sound_enabled", bool(value))
+
+    def selected_sound(self):
+        return self.get("selected_sound", DEFAULT_SOUND)
+
+    def set_selected_sound(self, relative_path):
+        self.set("selected_sound", relative_path)
+
+    def overlay_enabled(self):
+        return bool(self.get("overlay_enabled", False))
+
+    def set_overlay_enabled(self, value):
+        self.set("overlay_enabled", bool(value))
+
+    def first_run_complete(self):
+        return bool(self.get("first_run_complete", False))
+
+    def set_first_run_complete(self, value):
+        self.set("first_run_complete", bool(value))

@@ -156,9 +156,40 @@ def test_multiple_commanders():
 
 def test_journal_files_sorted():
     tmp = tempfile.mkdtemp()
-    _write(os.path.join(tmp, "Journal.230501-120000.part1.log"), "")
-    _write(os.path.join(tmp, "Journal.230501-120050.part2.log"), "")
+    first = os.path.join(tmp, "Journal.230501-120000.part1.log")
+    second = os.path.join(tmp, "Journal.230501-120050.part2.log")
+    _write(first, "")
+    _write(second, "")
+    # Journals are ordered by last write time, not filename: some game builds
+    # emit names like Journal.261011193104.01.log that sort incorrectly.
+    os.utime(first, (1000000000, 1000000000))
+    os.utime(second, (1000000100, 1000000100))
     files = journal_files(tmp)
     assert len(files) == 2
     assert files[0].endswith("part1.log")
     assert files[1].endswith("part2.log")
+
+
+def test_current_journal_ignores_bad_filenames():
+    tmp = tempfile.mkdtemp()
+    real = os.path.join(tmp, "Journal.2026-11-15T172402.01.log")
+    odd = os.path.join(tmp, "Journal.261011193104.01.log")
+    _write(real, _event("Location", StarSystem="Matet") + "\n")
+    _write(odd, _event("Location", StarSystem="Old") + "\n")
+    # The odd-named file is older even though its name sorts last.
+    os.utime(odd, (1000000000, 1000000000))
+    os.utime(real, (1000000100, 1000000100))
+    assert current_journal_file(tmp) == real
+
+
+def test_status_flags_integer_does_not_crash():
+    from edbio.journal import JournalMonitor
+
+    tmp = tempfile.mkdtemp()
+    with open(os.path.join(tmp, "Status.json"), "w", encoding="utf-8") as f:
+        json.dump({"timestamp": "2026-11-15T17:57:37Z", "event": "Status", "Flags": 0}, f)
+
+    monitor = JournalMonitor(tmp)
+    # Must not raise AttributeError: 'int' object has no attribute 'get'.
+    monitor._read_status()
+    assert monitor.game_running is True

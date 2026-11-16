@@ -36,12 +36,20 @@ def default_journal_dir():
     )
 
 
+def _journal_sort_key(path):
+    """Sort journals by last write time (some game builds use odd filenames)."""
+    try:
+        return (os.path.getmtime(path), os.path.basename(path))
+    except OSError:
+        return (0.0, os.path.basename(path))
+
+
 def journal_files(journal_dir):
-    """Return Journal log files sorted oldest -> newest."""
+    """Return Journal log files sorted oldest -> newest by modification time."""
     if not journal_dir or not os.path.isdir(journal_dir):
         return []
     files = glob.glob(os.path.join(journal_dir, JOURNAL_GLOB))
-    return sorted(files)
+    return sorted(files, key=_journal_sort_key)
 
 
 def current_journal_file(journal_dir):
@@ -153,6 +161,8 @@ class JournalMonitor(QThread):
         self.last_event_time = "--:--:--"
         self.game_running = False
         self.journal_connected = False
+        self._last_position = {}
+        self._last_status = None
 
     def set_journal_dir(self, path):
         with self._lock:
@@ -255,28 +265,40 @@ class JournalMonitor(QThread):
         except (json.JSONDecodeError, OSError, ValueError):
             return
 
-        flags = data.get("Flags", {})
-        self.game_running = flags.get("InMainGame", False) or \
-                            flags.get("OnFoot", False) or \
-                            flags.get("InSRV", False) or self.game_running
+        # Status.json is only written while the game is running. Treat a
+        # recently updated file as proof of life; Flags is an integer bitmask
+        # in the real format, not a dict.
+        try:
+            status_age = time.time() - os.path.getmtime(path)
+        except OSError:
+            status_age = 0
+        if status_age < 120:
+            self.game_running = True
 
         lat = data.get("Latitude")
         lon = data.get("Longitude")
         radius = data.get("PlanetRadius")
         body = data.get("BodyName")
-        if lat is not None or lon is not None or radius is not None or body:
-            self.position_changed.emit({
-                "lat": lat, "lon": lon, "radius": radius, "body": body,
-            })
+        position = {"lat": lat, "lon": lon, "radius": radius, "body": body}
+        if position != self._last_position:
+            self._last_position = position
+            self.position_changed.emit(position)
 
-        self._emit_status()
+        status = self._status_dict()
+        if status != self._last_status:
+            self._last_status = status
+            self.status_changed.emit(status)
 
-    def _emit_status(self):
-        self.status_changed.emit({
+    def _status_dict(self):
+        return {
             "journal_connected": self.journal_connected,
             "game_running": self.game_running,
             "system": self.current_system,
             "commander": self.current_commander,
             "body": self.current_body,
             "last_event_time": self.last_event_time,
-        })
+        }
+
+    def _emit_status(self):
+        self._last_status = self._status_dict()
+        self.status_changed.emit(self._last_status)

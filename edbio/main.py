@@ -55,10 +55,12 @@ def main():
     processor = JournalProcessor(db, species_db)
 
     monitor = JournalMonitor(default_journal_dir())
-    monitor.start()
 
     window = MainWindow(processor, monitor, settings, ICON_PATH)
     window.show()
+    # Start only after the window has connected its signals, otherwise the
+    # initial journal replay can be emitted before anyone is listening.
+    monitor.start()
 
     try:
         sys.exit(app.exec())

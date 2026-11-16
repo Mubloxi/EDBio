@@ -27,6 +27,11 @@ class ExobiologyTab(QWidget):
         layout.setSpacing(6)
 
         # Species table.
+        self.lbl_empty = QLabel()
+        self.lbl_empty.setWordWrap(True)
+        self.lbl_empty.setStyleSheet("color: #cccccc; padding: 6px;")
+        layout.addWidget(self.lbl_empty)
+
         self.table = QTableWidget(0, 6)
         self.table.setHorizontalHeaderLabels(
             ["Species", "Status", "Value", "Samples", "Distance", "Remaining"]
@@ -145,6 +150,21 @@ class ExobiologyTab(QWidget):
             self.lbl_progress.setText("Sample Progress: --")
             self.lbl_coords.setText("Last Sample Coordinates: --")
             self.lbl_total.setText("Estimated Total: 0 CR")
+
+        if self.table.rowCount():
+            self.lbl_empty.hide()
+        else:
+            if planet:
+                self.lbl_empty.setText(
+                    "No species predictions yet. Check for biological signals "
+                    "or wait for the journal to report them."
+                )
+            else:
+                self.lbl_empty.setText(
+                    "Waiting for journal data. Scan a planet to see exobiology "
+                    "information here."
+                )
+            self.lbl_empty.show()
 
     def _open_detail(self):
         row = self.table.currentRow()

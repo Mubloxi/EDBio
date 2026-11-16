@@ -71,8 +71,6 @@ class MainWindow(QMainWindow):
         self._event_timer = QTimer(self)
         self._event_timer.timeout.connect(self._refresh_status_text)
         self._event_timer.start(1000)
-        self._event_timer.timeout.connect(self._refresh_status_text)
-        self._event_timer.start(1000)
 
     def _apply_palette(self):
         palette = QPalette()
@@ -193,7 +191,10 @@ class MainWindow(QMainWindow):
         self.current_body = status.get("body")
         self.last_event_time = status.get("last_event_time", "--:--:--")
         self.processor.set_system(status.get("system"))
-        self.processor.set_body(status.get("body"))
+        # A missing BodyName in Status.json must not wipe the body that the
+        # journal just told us about (Scan / SAASignalsFound / Touchdown).
+        if status.get("body"):
+            self.processor.set_body(status.get("body"))
 
         self.tab_exo.refresh()
         self.tab_planets.refresh()
