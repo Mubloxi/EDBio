@@ -1,8 +1,37 @@
 # EDBio
 
-A small exobiology tool for Elite Dangerous. Reads the game journal to track
-biological samples, predict possible species, and show estimated Vista Genomics
-payouts. No login, no account, no companion application required.
+EDBio is a standalone Windows desktop tool for Elite Dangerous: Odyssey
+commanders who want to keep their exobiology work organized. It follows the
+game's journal as it changes and brings the current commander, system, planet,
+biological signals, sample progress, and estimated Vista Genomics value into
+one compact application. No account or companion service is required.
+
+Use EDBio to move from a planet scan to completed genetic samples: review
+possible species, see what is known about their requirements, track the
+Log / Sample / Analyse sequence, and check the distance needed before taking
+the next sample. Predictions are identified as predictions, not confirmed
+discoveries, and credit values and first-footfall bonuses are estimates rather
+than guaranteed payouts.
+
+EDBio keeps discovery history in a local SQLite database, with search, CSV
+export, database inspection, and backups. Optional sound alerts can notify you
+when an FSS scan finds biological signals, and an optional overlay can show
+bio-signal information while Elite Dangerous is the foreground application.
+The nearby Vista Genomics search uses public Spansh station data to help find a
+turn-in location; station listings may be out of date.
+
+## Screenshots
+
+These screenshots show the database panel: saved-record browsing, table
+filtering, and expanded record details.
+
+![EDBio database panel showing saved history records and database tools](docs/screenshots/database.png)
+
+*Browse saved records, review database status, and access CSV export and backup tools.*
+
+![EDBio database panel with an expanded history record](docs/screenshots/database-record-details.png)
+
+*Expand a history row to inspect the saved record fields.*
 
 ## Features
 
