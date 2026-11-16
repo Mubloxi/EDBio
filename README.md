@@ -29,12 +29,12 @@ payouts. No login, no account, no companion application required.
 ## Download
 
 Pre-built Windows installers are available on the GitHub Releases page for this
-repository. Run `EDBio-Setup.exe` to install EDBio for the current Windows user.
+repository. Run `EDBio-Setup-1.0.0.exe` to install EDBio for the current Windows user.
 The desktop shortcut option is checked by default in the installer.
 
 ## How To Use
 
-1. Download and run `EDBio-Setup.exe`. Python does not need to be installed.
+1. Download and run `EDBio-Setup-1.0.0.exe`. Python does not need to be installed.
 2. On first launch, choose a bio-alert sound and use Preview to test it.
 3. Start Elite Dangerous and load into a game.
 4. EDBio detects the journal directory automatically

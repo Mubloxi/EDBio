@@ -1,5 +1,5 @@
 #define AppName "EDBio"
-#define AppVersion "1.3.0"
+#define AppVersion "1.0.0"
 #define AppExeName "EDBio.exe"
 
 [Setup]
@@ -11,7 +11,7 @@ DefaultGroupName={#AppName}
 PrivilegesRequired=lowest
 DisableProgramGroupPage=yes
 OutputDir=..\dist
-OutputBaseFilename=EDBio-Setup
+OutputBaseFilename=EDBio-Setup-1.0.0
 SetupIconFile=..\resources\icon.ico
 UninstallDisplayIcon={app}\{#AppExeName}
 Compression=lzma

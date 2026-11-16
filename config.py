@@ -7,7 +7,7 @@ from audio import DEFAULT_SOUND
 
 APP_NAME = "EDBio"
 ORGANIZATION = "EDBio"
-VERSION = "1.3.0"
+VERSION = "1.0.0"
 VISTA_SEARCH_RADII = (25, 50, 100, 250, 500, 1000)
 
 DEFAULT_JOURNAL_DIR = os.path.join(
