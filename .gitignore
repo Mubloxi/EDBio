@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+env/
+venv/
+.venv/
+.venv*/
+
+# EDBio user data (created at runtime, outside install dir)
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+debug.log
+edbio.log
+
+# PyInstaller / builds
+build/
+dist/
+*.egg-info/
+*.spec
+*.exe
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/

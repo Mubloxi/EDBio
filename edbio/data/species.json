@@ -1,0 +1,934 @@
+{
+  "version": "1.0.0",
+  "source": "Community exobiology reference data (ED-DSN, Canonn, Elite Dangerous community docs)",
+  "note": "Environmental requirements are community-documented observations. Where a requirement is not documented it is listed as unknown. Prices are base Vista Genomics payouts per full genetic sample set.",
+  "genera": [
+    {
+      "genus": "Stratum",
+      "genus_localised": "Stratum",
+      "codex_genus": "$Codex_Ent_Stratum_Genus_Name;",
+      "species": [
+        {
+          "name": "Stratum Tectonicas",
+          "codex_species": "$Codex_Ent_Stratum_07_Name;",
+          "base_value": 19010800,
+          "requirements": {
+            "atmosphere": "Sulphur Dioxide",
+            "atmosphere_type": "Sulphur Dioxide",
+            "min_temperature": 100,
+            "max_temperature": 180,
+            "planet_class": ["High metal content body", "Icy body", "Rocky body"],
+            "volcanism": ["major silicate vapour geysers", "major rocky magma", "metallic magma"],
+            "notes": "Most commonly found on cold SO2 high-metal-content worlds."
+          },
+          "data_source": "ED-DSN / Canonn community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Bacterium",
+      "genus_localised": "Bacterium",
+      "codex_genus": "$Codex_Ent_Bacterial_Genus_Name;",
+      "species": [
+        {
+          "name": "Bacterium Cerbrus",
+          "codex_species": "$Codex_Ent_Bacterial_12_Name;",
+          "base_value": 1689800,
+          "requirements": {
+            "atmosphere": "Thin",
+            "planet_class": ["High metal content body", "Icy body", "Rocky body", "Metal rich body"],
+            "notes": "Thin-atmosphere worlds across a range of temperatures."
+          },
+          "data_source": "Elite Dangerous Wiki / community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Volu",
+          "codex_species": "$Codex_Ent_Bacterial_01_Name;",
+          "base_value": 7774700,
+          "requirements": {
+            "min_temperature": 165,
+            "planet_class": ["High metal content body"],
+            "notes": "Warmer high-metal-content worlds."
+          },
+          "data_source": "ED-DSN community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Informem",
+          "codex_species": "$Codex_Ent_Bacterial_13_Name;",
+          "base_value": 8418000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Nebulus",
+          "codex_species": "$Codex_Ent_Bacterial_14_Name;",
+          "base_value": 5289900,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Aurasus",
+          "codex_species": "$Codex_Ent_Bacterial_02_Name;",
+          "base_value": 1000000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Bullaris",
+          "codex_species": "$Codex_Ent_Bacterial_03_Name;",
+          "base_value": 1152500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Omentum",
+          "codex_species": "$Codex_Ent_Bacterial_11_Name;",
+          "base_value": 4638900,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Scopulum",
+          "codex_species": "$Codex_Ent_Bacterial_15_Name;",
+          "base_value": 4934500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Tela",
+          "codex_species": "$Codex_Ent_Bacterial_16_Name;",
+          "base_value": 1949000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Verrata",
+          "codex_species": "$Codex_Ent_Bacterial_17_Name;",
+          "base_value": 3897000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Vesicula",
+          "codex_species": "$Codex_Ent_Bacterial_18_Name;",
+          "base_value": 1000000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Bacterium Alcyoneum",
+          "codex_species": "$Codex_Ent_Bacterial_04_Name;",
+          "base_value": 1658500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Fonticulua",
+      "genus_localised": "Fonticulua",
+      "codex_genus": "$Codex_Ent_Fonticulus_Genus_Name;",
+      "species": [
+        {
+          "name": "Fonticulua Fluctus",
+          "codex_species": "$Codex_Ent_Fonticulus_01_Name;",
+          "base_value": 20000000,
+          "requirements": {
+            "atmosphere": "Oxygen",
+            "planet_class": ["Icy body", "Rocky Ice body"],
+            "notes": "Oxygen atmospheres on icy/rocky ice worlds."
+          },
+          "data_source": "ED-DSN community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fonticulua Campestris",
+          "codex_species": "$Codex_Ent_Fonticulus_06_Name;",
+          "base_value": 1000000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fonticulua Digitos",
+          "codex_species": "$Codex_Ent_Fonticulus_07_Name;",
+          "base_value": 1804100,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fonticulua Lapida",
+          "codex_species": "$Codex_Ent_Fonticulus_08_Name;",
+          "base_value": 3111000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fonticulua Segmentatus",
+          "codex_species": "$Codex_Ent_Fonticulus_09_Name;",
+          "base_value": 19010800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fonticulua Upupam",
+          "codex_species": "$Codex_Ent_Fonticulus_10_Name;",
+          "base_value": 5727600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Tussock",
+      "genus_localised": "Tussock",
+      "codex_genus": "$Codex_Ent_Tussock_Genus_Name;",
+      "species": [
+        {
+          "name": "Tussock Stigmasis",
+          "codex_species": "$Codex_Ent_Tussock_01_Name;",
+          "base_value": 19010800,
+          "requirements": {
+            "atmosphere": "Sulphur Dioxide",
+            "min_temperature": 120,
+            "max_temperature": 140,
+            "planet_class": ["High metal content body", "Rocky body", "Metal rich body"],
+            "notes": "Cold SO2 worlds."
+          },
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Virgam",
+          "codex_species": "$Codex_Ent_Tussock_02_Name;",
+          "base_value": 14313700,
+          "requirements": {
+            "atmosphere": "Water",
+            "min_temperature": 350,
+            "max_temperature": 450,
+            "notes": "Warmer water-atmosphere worlds."
+          },
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Albata",
+          "codex_species": "$Codex_Ent_Tussock_03_Name;",
+          "base_value": 3252500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Capillum",
+          "codex_species": "$Codex_Ent_Tussock_04_Name;",
+          "base_value": 7025800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Caputus",
+          "codex_species": "$Codex_Ent_Tussock_05_Name;",
+          "base_value": 3472400,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Catena",
+          "codex_species": "$Codex_Ent_Tussock_06_Name;",
+          "base_value": 1766600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Cultro",
+          "codex_species": "$Codex_Ent_Tussock_07_Name;",
+          "base_value": 1766600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Divisa",
+          "codex_species": "$Codex_Ent_Tussock_08_Name;",
+          "base_value": 1766600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Ignis",
+          "codex_species": "$Codex_Ent_Tussock_09_Name;",
+          "base_value": 1849000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Pennata",
+          "codex_species": "$Codex_Ent_Tussock_10_Name;",
+          "base_value": 5853800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Pennatis",
+          "codex_species": "$Codex_Ent_Tussock_11_Name;",
+          "base_value": 1000000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Propagito",
+          "codex_species": "$Codex_Ent_Tussock_12_Name;",
+          "base_value": 1000000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Serrati",
+          "codex_species": "$Codex_Ent_Tussock_13_Name;",
+          "base_value": 4447100,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Triticum",
+          "codex_species": "$Codex_Ent_Tussock_14_Name;",
+          "base_value": 7774700,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tussock Ventusa",
+          "codex_species": "$Codex_Ent_Tussock_15_Name;",
+          "base_value": 3227700,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Recepta",
+      "genus_localised": "Recepta",
+      "codex_genus": "$Codex_Ent_Recepta_Genus_Name;",
+      "species": [
+        {
+          "name": "Recepta Conditivus",
+          "codex_species": "$Codex_Ent_Recepta_01_Name;",
+          "base_value": 14313700,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Recepta Deltahedronix",
+          "codex_species": "$Codex_Ent_Recepta_02_Name;",
+          "base_value": 16202800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Recepta Umbrux",
+          "codex_species": "$Codex_Ent_Recepta_03_Name;",
+          "base_value": 12934900,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Cactoida",
+      "genus_localised": "Cactoida",
+      "codex_genus": "$Codex_Ent_Cactoida_Genus_Name;",
+      "species": [
+        {
+          "name": "Cactoida Vermis",
+          "codex_species": "$Codex_Ent_Cactoida_01_Name;",
+          "base_value": 16202800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Cactoida Cortexum",
+          "codex_species": "$Codex_Ent_Cactoida_02_Name;",
+          "base_value": 3667600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Cactoida Lapis",
+          "codex_species": "$Codex_Ent_Cactoida_03_Name;",
+          "base_value": 2483600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Cactoida Peperatis",
+          "codex_species": "$Codex_Ent_Cactoida_04_Name;",
+          "base_value": 2483600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Cactoida Pullulanta",
+          "codex_species": "$Codex_Ent_Cactoida_05_Name;",
+          "base_value": 3667600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Concha",
+      "genus_localised": "Concha",
+      "codex_genus": "$Codex_Ent_Concha_Genus_Name;",
+      "species": [
+        {
+          "name": "Concha Biconcavis",
+          "codex_species": "$Codex_Ent_Concha_01_Name;",
+          "base_value": 19010800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Concha Labiata",
+          "codex_species": "$Codex_Ent_Concha_02_Name;",
+          "base_value": 2352400,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Concha Aureolas",
+          "codex_species": "$Codex_Ent_Concha_03_Name;",
+          "base_value": 7774700,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Concha Renibus",
+          "codex_species": "$Codex_Ent_Concha_04_Name;",
+          "base_value": 4572400,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Frutexa",
+      "genus_localised": "Frutexa",
+      "codex_genus": "$Codex_Ent_Frutexa_Genus_Name;",
+      "species": [
+        {
+          "name": "Frutexa Flammasis",
+          "codex_species": "$Codex_Ent_Frutexa_01_Name;",
+          "base_value": 10326000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Frutexa Sponsae",
+          "codex_species": "$Codex_Ent_Frutexa_02_Name;",
+          "base_value": 5988000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Frutexa Acus",
+          "codex_species": "$Codex_Ent_Frutexa_03_Name;",
+          "base_value": 7774700,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Frutexa Collum",
+          "codex_species": "$Codex_Ent_Frutexa_04_Name;",
+          "base_value": 1639800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Frutexa Fera",
+          "codex_species": "$Codex_Ent_Frutexa_05_Name;",
+          "base_value": 1632500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Frutexa Flabellum",
+          "codex_species": "$Codex_Ent_Frutexa_06_Name;",
+          "base_value": 1808900,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Frutexa Metallicum",
+          "codex_species": "$Codex_Ent_Frutexa_07_Name;",
+          "base_value": 1632500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Osseus",
+      "genus_localised": "Osseus",
+      "codex_genus": "$Codex_Ent_Osseus_Genus_Name;",
+      "species": [
+        {
+          "name": "Osseus Discus",
+          "codex_species": "$Codex_Ent_Osseus_01_Name;",
+          "base_value": 12934900,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Osseus Pellebantus",
+          "codex_species": "$Codex_Ent_Osseus_02_Name;",
+          "base_value": 9739000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Osseus Cornibus",
+          "codex_species": "$Codex_Ent_Osseus_03_Name;",
+          "base_value": 1483000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Osseus Fractus",
+          "codex_species": "$Codex_Ent_Osseus_04_Name;",
+          "base_value": 4027800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Osseus Pumice",
+          "codex_species": "$Codex_Ent_Osseus_05_Name;",
+          "base_value": 3156300,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Osseus Spiralis",
+          "codex_species": "$Codex_Ent_Osseus_06_Name;",
+          "base_value": 2404700,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Clypeus",
+      "genus_localised": "Clypeus",
+      "codex_genus": "$Codex_Ent_Clypeus_Genus_Name;",
+      "species": [
+        {
+          "name": "Clypeus Speculumi",
+          "codex_species": "$Codex_Ent_Clypeus_01_Name;",
+          "base_value": 16202800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Clypeus Margaritus",
+          "codex_species": "$Codex_Ent_Clypeus_02_Name;",
+          "base_value": 11873200,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Clypeus Lacrimam",
+          "codex_species": "$Codex_Ent_Clypeus_03_Name;",
+          "base_value": 8418000,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Tubus",
+      "genus_localised": "Tubus",
+      "codex_genus": "$Codex_Ent_Tubus_Genus_Name;",
+      "species": [
+        {
+          "name": "Tubus Cavas",
+          "codex_species": "$Codex_Ent_Tubus_01_Name;",
+          "base_value": 11873200,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tubus Compagibus",
+          "codex_species": "$Codex_Ent_Tubus_02_Name;",
+          "base_value": 7774700,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tubus Conifer",
+          "codex_species": "$Codex_Ent_Tubus_03_Name;",
+          "base_value": 2415500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tubus Rosarium",
+          "codex_species": "$Codex_Ent_Tubus_04_Name;",
+          "base_value": 2637500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Tubus Sororibus",
+          "codex_species": "$Codex_Ent_Tubus_05_Name;",
+          "base_value": 5727600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Aleoida",
+      "genus_localised": "Aleoida",
+      "codex_genus": "$Codex_Ent_Aleoids_Genus_Name;",
+      "species": [
+        {
+          "name": "Aleoida Gravis",
+          "codex_species": "$Codex_Ent_Aleoid_01_Name;",
+          "base_value": 12934900,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Aleoida Arcus",
+          "codex_species": "$Codex_Ent_Aleoid_02_Name;",
+          "base_value": 7252500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Aleoida Coronamus",
+          "codex_species": "$Codex_Ent_Aleoid_03_Name;",
+          "base_value": 6284600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Aleoida Laminiae",
+          "codex_species": "$Codex_Ent_Aleoid_04_Name;",
+          "base_value": 3385200,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Aleoida Spica",
+          "codex_species": "$Codex_Ent_Aleoid_05_Name;",
+          "base_value": 3385200,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Fungoida",
+      "genus_localised": "Fungoida",
+      "codex_genus": "$Codex_Ent_Fungoids_Genus_Name;",
+      "species": [
+        {
+          "name": "Fungoida Bullarum",
+          "codex_species": "$Codex_Ent_Fungoid_01_Name;",
+          "base_value": 3703200,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fungoida Stabitis",
+          "codex_species": "$Codex_Ent_Fungoid_02_Name;",
+          "base_value": 2680300,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fungoida Gelata",
+          "codex_species": "$Codex_Ent_Fungoid_03_Name;",
+          "base_value": 3330300,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fungoida Setisis",
+          "codex_species": "$Codex_Ent_Fungoid_04_Name;",
+          "base_value": 1670100,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Fumerola",
+      "genus_localised": "Fumerola",
+      "codex_genus": "$Codex_Ent_Fumerola_Genus_Name;",
+      "species": [
+        {
+          "name": "Fumerola Extremus",
+          "codex_species": "$Codex_Ent_Fumerola_01_Name;",
+          "base_value": 16202800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fumerola Nitris",
+          "codex_species": "$Codex_Ent_Fumerola_02_Name;",
+          "base_value": 7500900,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fumerola Aquatis",
+          "codex_species": "$Codex_Ent_Fumerola_03_Name;",
+          "base_value": 6284600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Fumerola Carbosis",
+          "codex_species": "$Codex_Ent_Fumerola_04_Name;",
+          "base_value": 6284600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Electricae",
+      "genus_localised": "Electricae",
+      "codex_genus": "$Codex_Ent_Electricae_Genus_Name;",
+      "species": [
+        {
+          "name": "Electricae Pluma",
+          "codex_species": "$Codex_Ent_Electricae_01_Name;",
+          "base_value": 6284600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        },
+        {
+          "name": "Electricae Radialem",
+          "codex_species": "$Codex_Ent_Electricae_02_Name;",
+          "base_value": 6284600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Brain Tree",
+      "genus_localised": "Brain Tree",
+      "codex_genus": "$Codex_Ent_BrainTree_Genus_Name;",
+      "species": [
+        {
+          "name": "Brain Tree",
+          "codex_species": "$Codex_Ent_BrainTree_01_Name;",
+          "base_value": 1593700,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Bark Mounds",
+      "genus_localised": "Bark Mounds",
+      "codex_genus": "$Codex_Ent_BarkMounds_Genus_Name;",
+      "species": [
+        {
+          "name": "Bark Mounds",
+          "codex_species": "$Codex_Ent_BarkMounds_01_Name;",
+          "base_value": 1471900,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Crystalline Shards",
+      "genus_localised": "Crystalline Shards",
+      "codex_genus": "$Codex_Ent_CrystallineShards_Genus_Name;",
+      "species": [
+        {
+          "name": "Crystalline Shards",
+          "codex_species": "$Codex_Ent_CrystallineShards_01_Name;",
+          "base_value": 1628800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Sinuous Tubers",
+      "genus_localised": "Sinuous Tubers",
+      "codex_genus": "$Codex_Ent_SinuousTubers_Genus_Name;",
+      "species": [
+        {
+          "name": "Sinuous Tubers",
+          "codex_species": "$Codex_Ent_SinuousTubers_01_Name;",
+          "base_value": 1514500,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Ingensradices",
+      "genus_localised": "Ingensradices",
+      "codex_genus": "$Codex_Ent_Ingensradices_Genus_Name;",
+      "species": [
+        {
+          "name": "Ingensradices Unicus",
+          "codex_species": "$Codex_Ent_Ingensradices_01_Name;",
+          "base_value": 119037,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Anemone",
+      "genus_localised": "Anemone",
+      "codex_genus": "$Codex_Ent_Anemone_Genus_Name;",
+      "species": [
+        {
+          "name": "Anemone",
+          "codex_species": "$Codex_Ent_Anemone_01_Name;",
+          "base_value": 1499900,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Amphora Plant",
+      "genus_localised": "Amphora Plant",
+      "codex_genus": "$Codex_Ent_Amphora_Genus_Name;",
+      "species": [
+        {
+          "name": "Amphora Plant",
+          "codex_species": "$Codex_Ent_Amphora_01_Name;",
+          "base_value": 1628800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Thargoid Coral Root",
+      "genus_localised": "Thargoid Coral Root",
+      "codex_genus": "$Codex_Ent_Thargoid_Genus_Name;",
+      "species": [
+        {
+          "name": "Thargoid Coral Root",
+          "codex_species": "$Codex_Ent_Thargoid_01_Name;",
+          "base_value": 1924600,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    },
+    {
+      "genus": "Thargoid Coral Tree",
+      "genus_localised": "Thargoid Coral Tree",
+      "codex_genus": "$Codex_Ent_Thargoid_Genus_Name;",
+      "species": [
+        {
+          "name": "Thargoid Coral Tree",
+          "codex_species": "$Codex_Ent_Thargoid_02_Name;",
+          "base_value": 1896800,
+          "requirements": {},
+          "data_source": "Community documentation",
+          "data_date": "2023-05"
+        }
+      ]
+    }
+  ]
+}
