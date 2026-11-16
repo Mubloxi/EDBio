@@ -1,4 +1,4 @@
-# Python
+# python stuff i dont want included so i dont get a 100MB push limit error      
 __pycache__/
 *.py[cod]
 *.pyo
@@ -6,13 +6,13 @@ __pycache__/
 .Python
 *.so
 
-# Virtual environments
+# private shit
 env/
 venv/
 .venv/
 .venv*/
 
-# EDBio user data (created at runtime, outside install dir)
+# EDBio user data created at runtime outside install dir ofc
 *.db
 *.sqlite
 *.sqlite3
@@ -22,14 +22,14 @@ venv/
 debug.log
 edbio.log
 
-# PyInstaller / builds
+# build 
 build/
 dist/
 *.egg-info/
 *.spec
 *.exe
 
-# Editor / OS
+# vs code shi
 .idea/
 .vscode/
 *.swp

@@ -17,6 +17,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 add_data = [
     (os.path.join(ROOT, "edbio", "data"), "edbio/data"),
     (os.path.join(ROOT, "edbio", "resources"), "edbio/resources"),
+    (os.path.join(ROOT, "sfx"), "sfx"),
 ]
 
 pyi_args = [

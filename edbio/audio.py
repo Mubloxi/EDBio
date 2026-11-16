@@ -50,7 +50,11 @@ def sound_file_path(relative_path):
     """Resolve a catalog-relative sound path within the bundled sound folder."""
     if not relative_path:
         return None
-    path = os.path.abspath(os.path.join(SOUND_DIRECTORY, relative_path.replace("/", os.sep)))
-    if os.path.commonpath((os.path.abspath(SOUND_DIRECTORY), path)) != os.path.abspath(SOUND_DIRECTORY):
+    root = os.path.abspath(SOUND_DIRECTORY)
+    path = os.path.abspath(os.path.join(root, relative_path.replace("/", os.sep)))
+    try:
+        if os.path.commonpath((root, path)) != root:
+            return None
+    except ValueError:
         return None
     return path

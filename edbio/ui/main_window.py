@@ -2,19 +2,23 @@
 
 import os
 
-from PySide6.QtCore import Qt, QTimer, QEvent
+from PySide6.QtCore import QEvent, QTimer, Qt, QUrl
 from PySide6.QtGui import QAction, QPalette, QColor, QIcon
+from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QTabWidget, QStatusBar, QSystemTrayIcon, QMenu, QMessageBox,
     QFileDialog, QFrame,
 )
 
+from ..audio import sound_file_path
 from .exobiology_tab import ExobiologyTab
 from .planets_tab import PlanetsTab
 from .history_tab import HistoryTab
 from .settings_dialog import SettingsDialog
 from .about_dialog import AboutDialog
+from .bio_overlay import BioOverlay
+from .sound_picker import FirstRunDialog
 from ..journal import default_journal_dir
 from ..config import APP_NAME, VERSION
 
@@ -40,6 +44,11 @@ class MainWindow(QMainWindow):
         self.last_event_time = "--:--:--"
         self._apply_palette()
         self._build_ui()
+        self.bio_overlay = BioOverlay(self.settings.overlay_enabled())
+        self._audio_output = QAudioOutput(self)
+        self._player = QMediaPlayer(self)
+        self._player.setAudioOutput(self._audio_output)
+        self._player.errorOccurred.connect(self._on_audio_error)
         self._connect_signals()
 
         # Restore geometry / tab.
@@ -157,8 +166,14 @@ class MainWindow(QMainWindow):
         self.act_tray = QAction("Minimize to System &Tray", self)
         self.act_tray.setCheckable(True)
         self.act_tray.setChecked(self.settings.minimize_to_tray())
+        self.act_overlay = QAction("In-game Bio Overlay", self)
+        self.act_overlay.setCheckable(True)
+        self.act_overlay.setChecked(self.settings.overlay_enabled())
+        self.act_overlay.toggled.connect(self.toggle_overlay)
         view_menu.addAction(self.act_ontop)
         view_menu.addAction(self.act_tray)
+        view_menu.addSeparator()
+        view_menu.addAction(self.act_overlay)
 
         tools_menu = menubar.addMenu("&Tools")
         act_settings = QAction("&Settings...", self)
@@ -172,6 +187,7 @@ class MainWindow(QMainWindow):
 
     def _connect_signals(self):
         self.monitor.event_received.connect(self.processor.handle_event)
+        self.monitor.live_event_received.connect(self._on_live_event)
         self.monitor.status_changed.connect(self._on_status_changed)
         self.monitor.position_changed.connect(self._on_position_changed)
         self.monitor.error_occurred.connect(self._on_error)
@@ -238,6 +254,64 @@ class MainWindow(QMainWindow):
         # Keep errors in the status bar, don't spam popups.
         self.status.showMessage(message, 5000)
 
+    def _on_audio_error(self, error, message):
+        if error != QMediaPlayer.NoError:
+            self.status.showMessage(f"Could not play sound: {message}", 8000)
+
+    def _play_sound(self, relative_path):
+        path = sound_file_path(relative_path)
+        if not path or not os.path.isfile(path):
+            self.status.showMessage(
+                f"Sound file is unavailable: {relative_path or '(none selected)'}", 8000
+            )
+            return
+        self._player.setSource(QUrl.fromLocalFile(path))
+        self._player.play()
+
+    def prompt_first_run(self):
+        if self.settings.first_run_complete():
+            return
+        dialog = FirstRunDialog(
+            self.settings.selected_sound(), self._play_sound, self
+        )
+        if dialog.exec():
+            selected = dialog.selected_path()
+            if selected:
+                self.settings.set_selected_sound(selected)
+            self.settings.set_first_run_complete(True)
+
+    def _on_live_event(self, event):
+        event_type = event.get("event")
+        body = event.get("BodyName") or self.processor.current_body
+
+        if event_type == "FSSBodySignals":
+            signals = event.get("Signals", [])
+            bio_signals = [
+                signal for signal in signals
+                if signal.get("Type_Localised") == "Biological"
+                or signal.get("Type") == "$SAA_SignalType_Biological;"
+            ]
+            if not bio_signals:
+                return
+
+            signal_count = sum(signal.get("Count", 1) or 1 for signal in bio_signals)
+            self.bio_overlay.show_detection(body, signal_count)
+            if self.settings.sound_enabled():
+                self._play_sound(self.settings.selected_sound())
+        elif event_type == "SAASignalsFound":
+            signals = self.processor.signals.get(body, {})
+            signal_count = signals.get("biological_count", 0)
+            genera = [
+                self.processor.species.normalize_genus(item.get("Genus"))
+                for item in event.get("Genuses", [])
+                if item.get("Genus")
+            ]
+            genera = [genus for genus in genera if genus]
+            if signal_count or genera:
+                self.bio_overlay.show_detection(
+                    body, signal_count or len(genera), genera
+                )
+
     def _on_tab_changed(self, index):
         self.settings.set_current_tab(index)
 
@@ -269,6 +343,8 @@ class MainWindow(QMainWindow):
             self.act_ontop.setChecked(self.settings.always_on_top())
             self.act_tray.setChecked(self.settings.minimize_to_tray())
             self.toggle_ontop(self.settings.always_on_top())
+            self.act_overlay.setChecked(self.settings.overlay_enabled())
+            self.bio_overlay.set_enabled(self.settings.overlay_enabled())
 
     def open_about(self):
         AboutDialog(self).exec()
@@ -280,6 +356,10 @@ class MainWindow(QMainWindow):
         else:
             self.setWindowFlags(flags & ~Qt.WindowStaysOnTopHint)
         self.show()
+
+    def toggle_overlay(self, enabled):
+        self.settings.set_overlay_enabled(enabled)
+        self.bio_overlay.set_enabled(enabled)
 
     def show_normal(self):
         self.showNormal()
@@ -298,6 +378,8 @@ class MainWindow(QMainWindow):
             self.tray.show()
             self.tray.showMessage(APP_NAME, "EDBio is running in the system tray.", 3000)
         else:
+            self._event_timer.stop()
+            self.bio_overlay.set_enabled(False)
             self.monitor.stop()
             event.accept()
 

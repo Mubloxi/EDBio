@@ -15,26 +15,35 @@ payouts. No login, no account, no companion application required.
 - First footfall multiplier shown as an estimate, never guaranteed
 - History tab with search, filtering, and CSV export (stored in SQLite)
 - Always-on-top, minimize to system tray, remembers window size and position
+- Optional sound alert when an FSS scan finds biological signals, with grouped
+  previewable sound choices
+- Optional in-game bio overlay showing the planet, signal count, and identified
+  genera when available
 - Manual journal directory selection
 - Settings dialog and About dialog
 
 ## Download
 
-Pre-built Windows releases are available on the GitHub Releases page for this
-repository. There is no installer; download EDBio.exe and run it.
+Pre-built Windows installers are available on the GitHub Releases page for this
+repository. Run `EDBio-Setup.exe` to install EDBio for the current Windows user.
 
 ## How To Use
 
-1. Download EDBio.exe and run it. Python does not need to be installed.
-2. Start Elite Dangerous and load into a game.
-3. EDBio detects the journal directory automatically
+1. Download and run `EDBio-Setup.exe`. Python does not need to be installed.
+2. On first launch, choose a bio-alert sound and use Preview to test it.
+3. Start Elite Dangerous and load into a game.
+4. EDBio detects the journal directory automatically
    (%USERPROFILE%\Saved Games\Frontier Developments\Elite Dangerous\).
    If it doesn't, use File > Journal Directory to pick it manually.
-4. Fly to a planet, scan it, and use the Surface Area Scanner. Biological
+5. Fly to a planet, scan it, and use the Surface Area Scanner. Biological
    signals, predicted species, and sample tracking appear in the Exobiology tab.
-5. Land and collect genetic samples. Sample progress, distance required, and
+6. Land and collect genetic samples. Sample progress, distance required, and
    distance remaining update as you move.
-6. Use the History tab to review past discoveries and export to CSV.
+7. Use the History tab to review past discoveries and export to CSV.
+
+Enable the sound alert and the optional overlay in Tools > Settings or View.
+The overlay only appears while Elite Dangerous is the foreground application;
+set the game display mode to Borderless or Windowed for it to appear.
 
 The application opens normally even when Elite Dangerous is closed, showing
 saved data from previous sessions.
@@ -64,9 +73,12 @@ python edbio/main.py
 
 # Build the standalone Windows executable
 python build_exe.py
+
+# Build the per-user Windows installer (requires Inno Setup 6)
+ISCC.exe installer\EDBio.iss
 ```
 
-The resulting executable is in dist\EDBio.exe.
+The executable and installer are written to `dist\`.
 
 ## Known Issues
 

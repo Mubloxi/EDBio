@@ -193,3 +193,37 @@ def test_status_flags_integer_does_not_crash():
     # Must not raise AttributeError: 'int' object has no attribute 'get'.
     monitor._read_status()
     assert monitor.game_running is True
+
+
+def test_live_event_signal_excludes_existing_journal_history():
+    from edbio.journal import JournalMonitor
+
+    tmp = tempfile.mkdtemp()
+    path = os.path.join(tmp, "Journal.2026-11-15T172402.01.log")
+    old_event = _event(
+        "FSSBodySignals",
+        BodyName="Planet A",
+        Signals=[{"Type_Localised": "Biological", "Count": 2}],
+    )
+    _write(path, old_event + "\n")
+
+    monitor = JournalMonitor(tmp)
+    replayed = []
+    live = []
+    monitor.event_received.connect(replayed.append)
+    monitor.live_event_received.connect(live.append)
+    monitor._tick()
+
+    assert len(replayed) == 1
+    assert live == []
+
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(_event(
+            "FSSBodySignals",
+            BodyName="Planet B",
+            Signals=[{"Type_Localised": "Biological", "Count": 1}],
+        ) + "\n")
+    monitor._tick()
+
+    assert len(live) == 1
+    assert live[0]["BodyName"] == "Planet B"

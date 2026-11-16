@@ -12,7 +12,7 @@ if _root not in sys.path:
 
 try:
     from edbio.config import APP_NAME, Settings
-    from edbio.journal import JournalMonitor, default_journal_dir
+    from edbio.journal import JournalMonitor
     from edbio.database import Database
     from edbio.species import SpeciesDB
     from edbio.processor import JournalProcessor
@@ -20,7 +20,7 @@ try:
     from edbio.paths import user_data_dir, resource_path
 except ImportError:
     from .config import APP_NAME, Settings
-    from .journal import JournalMonitor, default_journal_dir
+    from .journal import JournalMonitor
     from .database import Database
     from .species import SpeciesDB
     from .processor import JournalProcessor
@@ -54,10 +54,11 @@ def main():
     species_db = SpeciesDB()
     processor = JournalProcessor(db, species_db)
 
-    monitor = JournalMonitor(default_journal_dir())
+    monitor = JournalMonitor(settings.journal_dir())
 
     window = MainWindow(processor, monitor, settings, ICON_PATH)
     window.show()
+    window.prompt_first_run()
     # Start only after the window has connected its signals, otherwise the
     # initial journal replay can be emitted before anyone is listening.
     monitor.start()
