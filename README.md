@@ -22,16 +22,20 @@ turn-in location; station listings may be out of date.
 
 ## Screenshots
 
-These screenshots show the database panel: saved-record browsing, table
-filtering, and expanded record details.
+These database-panel screenshots use synthetic example rows for illustration;
+they do not show a commander's journal or saved discovery data.
 
-![EDBio database panel showing saved history records and database tools](docs/screenshots/database.png)
+![EDBio database panel showing example history records and database tools](docs/screenshots/database-history.png)
 
-*Browse saved records, review database status, and access CSV export and backup tools.*
+*Browse discovery history, check database status, and access CSV export and backup tools.*
 
-![EDBio database panel with an expanded history record](docs/screenshots/database-record-details.png)
+![EDBio database panel with an expanded example history record](docs/screenshots/database-record-details-example.png)
 
-*Expand a history row to inspect the saved record fields.*
+*Expand a history row to inspect its fields. Example values are illustrative.*
+
+![EDBio database panel showing processed journal events](docs/screenshots/database-processed-events.png)
+
+*Review the journal events EDBio has already processed. The rows shown are synthetic examples.*
 
 ## Features
 
@@ -58,12 +62,15 @@ filtering, and expanded record details.
 ## Download
 
 Pre-built Windows installers are available on the GitHub Releases page for this
-repository. Run `EDBio-Setup-1.0.0.exe` to install EDBio for the current Windows user.
-The desktop shortcut option is checked by default in the installer.
+repository. [Download the EDBio 1.0.0 Windows installer](https://github.com/Mubloxi/EDBio/releases/download/v1.0.0/EDBio-Setup-1.0.0.exe)
+or open the [GitHub Releases page](https://github.com/Mubloxi/EDBio/releases).
+Run `EDBio-Setup-1.0.0.exe` to install EDBio for the current Windows user. The
+desktop shortcut option is checked by default in the installer.
 
 ## How To Use
 
-1. Download and run `EDBio-Setup-1.0.0.exe`. Python does not need to be installed.
+1. Download and run `EDBio-Setup-1.0.0.exe`. Python does not need to be
+   installed.
 2. On first launch, choose a bio-alert sound and use Preview to test it.
 3. Start Elite Dangerous and load into a game.
 4. EDBio detects the journal directory automatically
@@ -80,7 +87,7 @@ The overlay only appears while Elite Dangerous is the foreground application;
 set the game display mode to Borderless or Windowed for it to appear.
 Add personal alert sounds from Tools > Settings. The Exobiology tab shows your
 docked station and can search Spansh for the nearest listed Vista Genomics
-service using the selected radius (25–1000 ly). Selling prices do not depend on
+service using the selected radius (25 to 1000 ly). Selling prices do not depend on
 which Vista Genomics station you use; the search recommends a nearby turn-in
 location, not a higher payout. Station listings are community data and may be
 out of date; an internet connection is required to search.
