@@ -6,7 +6,7 @@ from typing import Optional
 
 from .paths import resource_path
 
-DATA_DIR = resource_path("data")
+DATA_DIR = resource_path("edbio/data")
 
 # Status values for a species prediction / discovery.
 PREDICTED = "Predicted"
