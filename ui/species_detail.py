@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QPushButton,
 )
 
-from ..samples import NOT_STARTED, SAMPLING, COMPLETE
+from samples import NOT_STARTED, SAMPLING, COMPLETE
 
 
 ED_ORANGE = "#ff9900"

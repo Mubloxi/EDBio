@@ -1,8 +1,8 @@
 """Tests for biological species prediction."""
 
-from edbio.species import SpeciesDB, PREDICTED
-from edbio.processor import JournalProcessor
-from edbio.database import Database
+from species import SpeciesDB, PREDICTED
+from processor import JournalProcessor
+from database import Database
 
 
 def _planet(**overrides):

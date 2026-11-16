@@ -5,6 +5,7 @@ __pycache__/
 *.pyd
 .Python
 *.so
+*.dll
 
 # private shit
 env/
@@ -25,9 +26,12 @@ edbio.log
 # build 
 build/
 dist/
+target/
+**/target/
 *.egg-info/
 *.spec
 *.exe
+node_modules/
 
 # vs code shi
 .idea/

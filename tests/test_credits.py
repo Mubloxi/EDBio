@@ -1,6 +1,6 @@
 """Tests for credit calculations."""
 
-from edbio.credits import CreditCalculator, format_credits
+from credits import CreditCalculator, format_credits
 
 
 def test_species_value():

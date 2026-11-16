@@ -11,16 +11,18 @@ from PySide6.QtWidgets import (
     QFileDialog, QFrame,
 )
 
-from ..audio import sound_file_path
-from .exobiology_tab import ExobiologyTab
-from .planets_tab import PlanetsTab
-from .history_tab import HistoryTab
-from .settings_dialog import SettingsDialog
-from .about_dialog import AboutDialog
-from .bio_overlay import BioOverlay
-from .sound_picker import FirstRunDialog
-from ..journal import default_journal_dir
-from ..config import APP_NAME, VERSION
+from audio import sound_file_path
+from ui.exobiology_tab import ExobiologyTab
+from ui.planets_tab import PlanetsTab
+from ui.history_tab import HistoryTab
+from ui.settings_dialog import SettingsDialog
+from ui.about_dialog import AboutDialog
+from ui.bio_overlay import BioOverlay
+from ui.sound_picker import FirstRunDialog
+from ui.database_panel import DatabasePanel
+from stations import StationSearchThread
+from journal import default_journal_dir
+from config import APP_NAME, VERSION
 
 
 ED_ORANGE = "#ff9900"
@@ -49,6 +51,8 @@ class MainWindow(QMainWindow):
         self._player = QMediaPlayer(self)
         self._player.setAudioOutput(self._audio_output)
         self._player.errorOccurred.connect(self._on_audio_error)
+        self._settings_dialog = None
+        self._station_search = None
         self._connect_signals()
 
         # Restore geometry / tab.
@@ -131,10 +135,12 @@ class MainWindow(QMainWindow):
         self.tab_exo = ExobiologyTab(self.processor)
         self.tab_planets = PlanetsTab(self.processor)
         self.tab_history = HistoryTab(self.processor)
+        self.tab_database = DatabasePanel(self.processor.db)
 
         self.tabs.addTab(self.tab_exo, "Exobiology")
         self.tabs.addTab(self.tab_planets, "Planets")
         self.tabs.addTab(self.tab_history, "History")
+        self.tabs.addTab(self.tab_database, "Database")
         layout.addWidget(self.tabs, 1)
 
         # Status bar.
@@ -196,6 +202,7 @@ class MainWindow(QMainWindow):
         self.processor.on_planet_updated = self._on_planet_updated
         self.processor.on_sample_updated = self._on_sample_updated
         self.processor.on_history_added = self._on_history_added
+        self.tab_exo.on_find_vista_station = self.find_nearest_vista_station
 
     # --- header updates ---
 
@@ -207,6 +214,8 @@ class MainWindow(QMainWindow):
         self.current_body = status.get("body")
         self.last_event_time = status.get("last_event_time", "--:--:--")
         self.processor.set_system(status.get("system"))
+        self.tab_exo.set_current_system(status.get("system"))
+        self.tab_exo.set_docked_station(status.get("station"))
         # A missing BodyName in Status.json must not wipe the body that the
         # journal just told us about (Scan / SAASignalsFound / Touchdown).
         if status.get("body"):
@@ -257,6 +266,8 @@ class MainWindow(QMainWindow):
     def _on_audio_error(self, error, message):
         if error != QMediaPlayer.NoError:
             self.status.showMessage(f"Could not play sound: {message}", 8000)
+            if self._settings_dialog:
+                self._settings_dialog.set_preview_error(message)
 
     def _play_sound(self, relative_path):
         path = sound_file_path(relative_path)
@@ -264,9 +275,11 @@ class MainWindow(QMainWindow):
             self.status.showMessage(
                 f"Sound file is unavailable: {relative_path or '(none selected)'}", 8000
             )
-            return
+            return False
+        self._player.stop()
         self._player.setSource(QUrl.fromLocalFile(path))
         self._player.play()
+        return True
 
     def prompt_first_run(self):
         if self.settings.first_run_complete():
@@ -311,6 +324,39 @@ class MainWindow(QMainWindow):
                 self.bio_overlay.show_detection(
                     body, signal_count or len(genera), genera
                 )
+        elif event_type == "Docked":
+            self.find_nearest_vista_station()
+
+    def find_nearest_vista_station(self):
+        if self._station_search and self._station_search.isRunning():
+            return
+        system = self.processor.current_system
+        if not system:
+            self.tab_exo.show_station_error(
+                "The current system is unknown. Wait for a journal Location event, then retry."
+            )
+            return
+
+        radius = self.settings.vista_search_radius()
+        self.tab_exo.show_station_searching(radius)
+        search = StationSearchThread(system, radius, self)
+        search.result_ready.connect(self._on_vista_station_result)
+        search.failed.connect(self._on_vista_station_error)
+        search.finished.connect(self._on_station_search_finished)
+        self._station_search = search
+        search.start()
+
+    def _on_vista_station_result(self, station):
+        self.tab_exo.show_vista_station(
+            station, self.monitor.current_station or self.processor.current_station
+        )
+
+    def _on_vista_station_error(self, message):
+        self.tab_exo.show_station_error(message)
+        self.status.showMessage(message, 8000)
+
+    def _on_station_search_finished(self):
+        self._station_search = None
 
     def _on_tab_changed(self, index):
         self.settings.set_current_tab(index)
@@ -338,13 +384,17 @@ class MainWindow(QMainWindow):
             self.tab_history.export_csv(path)
 
     def open_settings(self):
-        dlg = SettingsDialog(self.settings, self)
+        dlg = SettingsDialog(
+            self.settings, self, preview_callback=self._play_sound
+        )
+        self._settings_dialog = dlg
         if dlg.exec():
             self.act_ontop.setChecked(self.settings.always_on_top())
             self.act_tray.setChecked(self.settings.minimize_to_tray())
             self.toggle_ontop(self.settings.always_on_top())
             self.act_overlay.setChecked(self.settings.overlay_enabled())
             self.bio_overlay.set_enabled(self.settings.overlay_enabled())
+        self._settings_dialog = None
 
     def open_about(self):
         AboutDialog(self).exec()
@@ -378,6 +428,12 @@ class MainWindow(QMainWindow):
             self.tray.show()
             self.tray.showMessage(APP_NAME, "EDBio is running in the system tray.", 3000)
         else:
+            if self._station_search and self._station_search.isRunning():
+                self.status.showMessage("Waiting for the station search to finish...", 10000)
+                self._station_search.wait(11000)
+                if self._station_search.isRunning():
+                    event.ignore()
+                    return
             self._event_timer.stop()
             self.bio_overlay.set_enabled(False)
             self.monitor.stop()

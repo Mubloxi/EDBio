@@ -3,13 +3,13 @@
 import re
 from datetime import datetime, timezone
 
-from .species import (
+from species import (
     SpeciesDB, PREDICTED, GENUS_CONFIRMED, SPECIES_CONFIRMED,
     SAMPLING, COMPLETE, UNKNOWN,
 )
-from .samples import SampleTracker, LOG, SAMPLE, ANALYSE, NOT_STARTED
-from .distance import haversine_meters
-from .credits import CreditCalculator
+from samples import SampleTracker, LOG, SAMPLE, ANALYSE, NOT_STARTED
+from distance import haversine_meters
+from credits import CreditCalculator
 
 
 class JournalProcessor:
@@ -22,6 +22,7 @@ class JournalProcessor:
         self.current_system = None
         self.current_body = None
         self.current_commander = None
+        self.current_station = None
         self.system_address = None
 
         # Body data keyed by body name within current system.
@@ -84,11 +85,17 @@ class JournalProcessor:
         elif etype == "FSDJump":
             self.current_system = event.get("StarSystem")
             self.current_body = None
+            self.current_station = None
             self.bodies = {}
             self.signals = {}
             self.body_genuses = {}
             self.trackers = {}
             self.planet_radius = None
+        elif etype == "Docked":
+            self.current_system = event.get("StarSystem") or self.current_system
+            self.current_station = event.get("StationName")
+        elif etype == "Undocked":
+            self.current_station = None
         elif etype == "Scan":
             self._handle_scan(event)
         elif etype == "FSSBodySignals":

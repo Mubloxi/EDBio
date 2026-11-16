@@ -3,11 +3,12 @@
 import os
 from PySide6.QtCore import QSettings
 
-from .audio import DEFAULT_SOUND
+from audio import DEFAULT_SOUND
 
 APP_NAME = "EDBio"
 ORGANIZATION = "EDBio"
-VERSION = "1.1.0"
+VERSION = "1.3.0"
+VISTA_SEARCH_RADII = (25, 50, 100, 250, 500, 1000)
 
 DEFAULT_JOURNAL_DIR = os.path.join(
     os.environ.get("USERPROFILE", ""),
@@ -111,6 +112,19 @@ class Settings:
 
     def set_overlay_enabled(self, value):
         self.set("overlay_enabled", bool(value))
+
+    def vista_search_radius(self):
+        try:
+            value = int(self.get("vista_search_radius", 50))
+        except (TypeError, ValueError):
+            return 50
+        return value if value in VISTA_SEARCH_RADII else 50
+
+    def set_vista_search_radius(self, value):
+        value = int(value)
+        if value not in VISTA_SEARCH_RADII:
+            raise ValueError(f"Unsupported Vista Genomics search radius: {value}")
+        self.set("vista_search_radius", value)
 
     def first_run_complete(self):
         return bool(self.get("first_run_complete", False))

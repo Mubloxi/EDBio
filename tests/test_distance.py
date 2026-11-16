@@ -1,6 +1,6 @@
 """Tests for great-circle distance calculations."""
 
-from edbio.distance import haversine_meters, format_distance
+from distance import haversine_meters, format_distance
 
 
 def test_haversine_same_point():

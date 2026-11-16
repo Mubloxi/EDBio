@@ -7,9 +7,9 @@ from PySide6.QtWidgets import (
     QFormLayout, QSpinBox, QDoubleSpinBox,
 )
 
-from ..species import PREDICTED, GENUS_CONFIRMED, SPECIES_CONFIRMED, SAMPLING, COMPLETE, UNKNOWN
-from ..credits import format_credits
-from .species_detail import SpeciesDetailDialog
+from species import PREDICTED, GENUS_CONFIRMED, SPECIES_CONFIRMED, SAMPLING, COMPLETE, UNKNOWN
+from credits import format_credits
+from ui.species_detail import SpeciesDetailDialog
 
 
 ED_ORANGE = "#ff9900"
@@ -75,6 +75,26 @@ class ExobiologyTab(QWidget):
         form.addRow(self.lbl_progress)
         form.addRow(self.lbl_coords)
         layout.addWidget(info)
+
+        sell_location = QGroupBox("Vista Genomics")
+        sell_layout = QVBoxLayout(sell_location)
+        sell_layout.setContentsMargins(8, 8, 8, 8)
+        self.lbl_docked_station = QLabel("Docked station: --")
+        self.lbl_vista_station = QLabel("Nearest known service: not searched")
+        self.lbl_vista_station.setWordWrap(True)
+        self.lbl_vista_source = QLabel(
+            "Selling pays the same at Vista Genomics stations; this finds a nearby place to turn in data."
+        )
+        self.lbl_vista_source.setWordWrap(True)
+        self.btn_find_vista = QPushButton("Find nearest Vista Genomics")
+        self.btn_find_vista.clicked.connect(self._find_vista_station)
+        sell_layout.addWidget(self.lbl_docked_station)
+        sell_layout.addWidget(self.lbl_vista_station)
+        sell_layout.addWidget(self.lbl_vista_source)
+        sell_layout.addWidget(self.btn_find_vista, 0, Qt.AlignLeft)
+        layout.addWidget(sell_location)
+        self.on_find_vista_station = None
+        self._current_system = ""
 
         # Total value at the bottom.
         self.lbl_total = QLabel("Estimated Total: 0 CR")
@@ -165,6 +185,60 @@ class ExobiologyTab(QWidget):
                     "information here."
                 )
             self.lbl_empty.show()
+
+    def set_docked_station(self, station):
+        self.lbl_docked_station.setText(
+            f"Docked station: {station or 'Not docked'}"
+        )
+
+    def show_station_searching(self, radius):
+        self.btn_find_vista.setEnabled(False)
+        self.lbl_vista_station.setText(
+            f"Searching Spansh for a Vista Genomics station within {radius} ly..."
+        )
+        self.lbl_vista_source.setText(
+            "Search runs in the background. Docking is read from the Elite Dangerous journal."
+        )
+
+    def show_vista_station(self, station, docked_station=None):
+        self.btn_find_vista.setEnabled(True)
+        if not station:
+            self.lbl_vista_station.setText("No matching station found in Spansh's listings.")
+            self.lbl_vista_source.setText(
+                "Try a larger search radius or check Spansh station data."
+            )
+            return
+
+        if (station["station"].casefold() == (docked_station or "").casefold()
+                and station["system"].casefold() == (self._current_system or "").casefold()):
+            recommendation = (
+                f"You're already docked at {station['station']} — "
+                "Vista Genomics is listed here."
+            )
+        else:
+            recommendation = (
+                f"{station['station']} — {station['system']} "
+                f"({station['distance']:.1f} ly from your system)"
+            )
+        arrival_distance = station.get("distance_to_arrival")
+        if arrival_distance is not None:
+            recommendation += f" - {arrival_distance:,.0f} ls from arrival"
+        self.lbl_vista_station.setText(recommendation)
+        updated = station.get("updated_at")
+        freshness = f"Updated: {updated}" if updated else "Update time not provided"
+        self.lbl_vista_source.setText(f"{station['source']} station data - {freshness}")
+
+    def show_station_error(self, message):
+        self.btn_find_vista.setEnabled(True)
+        self.lbl_vista_station.setText("Station search failed.")
+        self.lbl_vista_source.setText(message)
+
+    def set_current_system(self, system_name):
+        self._current_system = system_name or ""
+
+    def _find_vista_station(self):
+        if self.on_find_vista_station:
+            self.on_find_vista_station()
 
     def _open_detail(self):
         row = self.table.currentRow()

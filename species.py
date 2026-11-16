@@ -4,9 +4,9 @@ import json
 import os
 from typing import Optional
 
-from .paths import resource_path
+from paths import resource_path
 
-DATA_DIR = resource_path("edbio/data")
+DATA_DIR = resource_path("data")
 
 # Status values for a species prediction / discovery.
 PREDICTED = "Predicted"

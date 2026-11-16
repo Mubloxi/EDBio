@@ -1,6 +1,6 @@
 """Vista Genomics credit calculations."""
 
-from .species import SpeciesDB
+from species import SpeciesDB
 
 
 def format_credits(value):

@@ -1,5 +1,5 @@
 #define AppName "EDBio"
-#define AppVersion "1.1.0"
+#define AppVersion "1.3.0"
 #define AppExeName "EDBio.exe"
 
 [Setup]
@@ -12,14 +12,14 @@ PrivilegesRequired=lowest
 DisableProgramGroupPage=yes
 OutputDir=..\dist
 OutputBaseFilename=EDBio-Setup
-SetupIconFile=..\edbio\resources\icon.ico
+SetupIconFile=..\resources\icon.ico
 UninstallDisplayIcon={app}\{#AppExeName}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 
 [Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: unchecked
+Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: checkedonce
 
 [Files]
 Source: "..\dist\{#AppExeName}"; DestDir: "{app}"; Flags: ignoreversion

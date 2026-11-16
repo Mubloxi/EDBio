@@ -5,7 +5,7 @@
 # from the reference sample before the next one counts.
 
 
-from .distance import haversine_meters, format_distance
+from distance import haversine_meters, format_distance
 
 LOG = "Log"
 SAMPLE = "Sample"
@@ -56,7 +56,7 @@ class SampleTracker:
             self.distance_traveled = None
             self.remaining = None
             return
-        from .distance import haversine_meters
+        from distance import haversine_meters
         self.distance_traveled = haversine_meters(
             self.reference_lat, self.reference_lon,
             self.current_lat, self.current_lon, self.planet_radius)
@@ -108,15 +108,15 @@ class SampleTracker:
         return f"{self.scan_count}/3"
 
     def distance_text(self):
-        from .distance import format_distance
+        from distance import format_distance
         return format_distance(self.distance_traveled)
 
     def remaining_text(self):
-        from .distance import format_distance
+        from distance import format_distance
         return format_distance(self.remaining)
 
     def required_text(self):
-        from .distance import format_distance
+        from distance import format_distance
         return format_distance(self.distance_required)
 
     def to_dict(self):

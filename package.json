@@ -1,0 +1,11 @@
+{
+  "name": "edbio-database-panel",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p web/tsconfig.json",
+    "test": "node tests/database-model.test.cjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

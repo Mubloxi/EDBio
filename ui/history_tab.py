@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QPushButton, QLabel, QLineEdit, QHeaderView, QFileDialog, QMessageBox,
 )
 
-from ..credits import format_credits
+from credits import format_credits
 
 
 class HistoryTab(QWidget):

@@ -1,6 +1,6 @@
 """Tests for SQLite persistence: history, samples, planets, dedup."""
 
-from edbio.database import Database
+from database import Database
 
 
 def test_history_persistence():

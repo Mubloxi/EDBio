@@ -1,6 +1,6 @@
 """Tests for the genetic sample tracking state machine."""
 
-from edbio.samples import SampleTracker, LOG, SAMPLE, ANALYSE, NOT_STARTED, SAMPLING, COMPLETE
+from samples import SampleTracker, LOG, SAMPLE, ANALYSE, NOT_STARTED, SAMPLING, COMPLETE
 
 
 def test_tracker_log_then_sample_distance_gated():

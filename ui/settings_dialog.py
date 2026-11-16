@@ -1,12 +1,15 @@
 """Settings dialog."""
 
+import os
+
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QFormLayout, QHBoxLayout, QPushButton,
     QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog, QLabel,
-    QDialogButtonBox, QGroupBox,
+    QDialogButtonBox, QGroupBox, QMessageBox,
 )
 
-from .sound_picker import populate_sound_combo
+from audio import import_custom_sound
+from ui.sound_picker import populate_sound_combo
 
 
 class SettingsDialog(QDialog):
@@ -15,7 +18,7 @@ class SettingsDialog(QDialog):
         self.settings = settings
         self.preview_callback = preview_callback
         self.setWindowTitle("Settings")
-        self.resize(460, 420)
+        self.resize(480, 470)
 
         layout = QVBoxLayout(self)
 
@@ -53,14 +56,28 @@ class SettingsDialog(QDialog):
         self.btn_preview = QPushButton("Preview")
         self.btn_preview.setEnabled(has_sounds and preview_callback is not None)
         self.btn_preview.clicked.connect(self._preview_sound)
+        self.btn_add_sound = QPushButton("Add custom sound...")
+        self.btn_add_sound.clicked.connect(self._add_custom_sound)
         sound_row = QHBoxLayout()
         sound_row.addWidget(self.sound_combo, 1)
         sound_row.addWidget(self.btn_preview)
         aform.addRow(self.ck_sound)
         aform.addRow("Sound:", sound_row)
+        aform.addRow(self.btn_add_sound)
+        self.lbl_sound_status = QLabel()
+        self.lbl_sound_status.setWordWrap(True)
+        aform.addRow(self.lbl_sound_status)
         self.ck_overlay = QCheckBox("Show the bio overlay in Elite Dangerous")
         self.ck_overlay.setChecked(self.settings.overlay_enabled())
         aform.addRow(self.ck_overlay)
+        self.combo_vista_radius = QComboBox()
+        for radius in (25, 50, 100, 250, 500, 1000):
+            self.combo_vista_radius.addItem(f"{radius} ly", radius)
+        current_radius = self.combo_vista_radius.findData(
+            self.settings.vista_search_radius()
+        )
+        self.combo_vista_radius.setCurrentIndex(max(0, current_radius))
+        aform.addRow("Station search radius:", self.combo_vista_radius)
         overlay_note = QLabel(
             "The overlay appears only while the game is active. Set the game to "
             "Borderless or Windowed mode."
@@ -94,7 +111,32 @@ class SettingsDialog(QDialog):
     def _preview_sound(self):
         path = self.sound_combo.currentData()
         if path and self.preview_callback:
-            self.preview_callback(path)
+            if self.preview_callback(path) is False:
+                self.lbl_sound_status.setText("Could not start preview. Check the file and audio output.")
+            else:
+                self.lbl_sound_status.setText("Playing sound preview...")
+
+    def _add_custom_sound(self):
+        source, _ = QFileDialog.getOpenFileName(
+            self,
+            "Add a custom sound",
+            "",
+            "Audio files (*.mp3 *.wav *.ogg);;All files (*.*)",
+        )
+        if not source:
+            return
+        try:
+            selected = import_custom_sound(source)
+        except (OSError, ValueError) as exc:
+            QMessageBox.warning(self, "Could not add sound", str(exc))
+            return
+
+        populate_sound_combo(self.sound_combo, selected)
+        self.lbl_sound_status.setText(f"Added custom sound: {os.path.basename(source)}")
+        self.btn_preview.setEnabled(self.preview_callback is not None)
+
+    def set_preview_error(self, message):
+        self.lbl_sound_status.setText(f"Sound preview failed: {message}")
 
     def accept(self):
         self.settings.set_always_on_top(self.ck_ontop.isChecked())
@@ -102,6 +144,7 @@ class SettingsDialog(QDialog):
         self.settings.set_notify_valuable(self.ck_notify.isChecked())
         self.settings.set_sound_enabled(self.ck_sound.isChecked())
         self.settings.set_overlay_enabled(self.ck_overlay.isChecked())
+        self.settings.set_vista_search_radius(self.combo_vista_radius.currentData())
         selected_sound = self.sound_combo.currentData()
         if selected_sound:
             self.settings.set_selected_sound(selected_sound)

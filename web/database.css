@@ -1,0 +1,127 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+  background: #2b2b2b;
+  color: #ececec;
+  --surface: #353535;
+  --line: #4a4a4a;
+  --muted: #b7b7b7;
+  --accent: #ff9900;
+  --error: #ff8a80;
+  --success: #a5d6a7;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; min-width: 480px; }
+
+main { padding: 14px; }
+
+.toolbar,
+.actions,
+.table-heading,
+.table-tabs,
+.pagination {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar {
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+h1, h2, p { margin: 0; }
+h1 { color: var(--accent); font-size: 19px; font-weight: 600; }
+h2 { font-size: 15px; font-weight: 600; }
+.toolbar p, .footnote { color: var(--muted); }
+.toolbar p { margin-top: 4px; }
+.actions { gap: 8px; }
+
+button, input {
+  min-height: 31px;
+  border: 1px solid #666;
+  border-radius: 3px;
+  background: #414141;
+  color: #f5f5f5;
+  font: inherit;
+}
+
+button { padding: 5px 10px; cursor: pointer; }
+button:hover { background: #505050; }
+button:active { background: #303030; }
+button:disabled { cursor: wait; opacity: .65; }
+button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+button.primary { border-color: var(--accent); color: #ffd18a; }
+
+.status { min-height: 20px; margin: 9px 0; color: var(--muted); }
+.status.error { color: var(--error); }
+.status.success { color: var(--success); }
+
+.summary {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(100px, 1fr) minmax(110px, 1fr);
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.summary > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px 10px;
+  background: var(--surface);
+}
+
+.summary span, .search span { color: var(--muted); font-size: 11px; }
+.summary strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.table-tabs { gap: 4px; margin-top: 12px; border-bottom: 1px solid var(--line); }
+.table-tabs button { border-color: transparent; background: transparent; }
+.table-tabs button[aria-selected="true"] {
+  border-color: var(--line);
+  border-bottom-color: var(--accent);
+  color: #ffd18a;
+}
+
+.table-heading { gap: 12px; min-height: 48px; }
+.search, .page-size { display: flex; align-items: center; gap: 7px; }
+.search { margin-left: auto; }
+.search input { width: min(250px, 28vw); padding: 4px 8px; }
+.page-size select { min-height: 31px; border: 1px solid #666; border-radius: 3px; padding: 4px; background: #414141; color: #f5f5f5; }
+.row-count { min-width: 88px; color: var(--muted); text-align: right; }
+.table-wrap { max-height: calc(100vh - 270px); min-height: 180px; overflow: auto; border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { max-width: 320px; padding: 7px 9px; border-bottom: 1px solid #454545; }
+th { position: sticky; top: 0; z-index: 1; background: #3d3d3d; color: #ffd18a; font-weight: 600; }
+.sort-button { width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
+.sort-button:hover { background: transparent; color: #fff; }
+td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+tbody tr:hover { background: #3b3b3b; }
+.detail-row td { max-width: none; padding: 10px 12px; white-space: normal; }
+.detail-row pre { max-height: 180px; margin: 0; overflow: auto; color: #ddd; font: 12px/1.45 Consolas, monospace; }
+.inspect-button { min-height: 25px; padding: 2px 7px; }
+.empty { padding: 24px; color: var(--muted); text-align: center; }
+.footnote { margin-top: 8px; font-size: 11px; }
+.pagination { justify-content: flex-end; gap: 9px; padding-top: 8px; }
+.pagination span { min-width: 80px; color: var(--muted); text-align: center; }
+
+@media (max-width: 650px) {
+  main { padding: 9px; }
+  .toolbar { align-items: flex-start; flex-direction: column; }
+  .summary { grid-template-columns: 1fr 1fr; }
+  .summary > div:first-child { grid-column: 1 / -1; }
+  .table-heading { flex-wrap: wrap; padding: 8px 0; }
+  .search { order: 1; width: 100%; margin-left: 0; }
+  .search input { flex: 1; width: auto; }
+  .page-size { order: 2; }
+  .row-count { margin-left: auto; }
+}

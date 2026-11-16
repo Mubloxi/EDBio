@@ -3,10 +3,18 @@
 import os
 import sqlite3
 import json
+import csv
 from datetime import datetime, timezone
 
 
 class Database:
+    MANAGEMENT_TABLES = {
+        "history": "date DESC, id DESC",
+        "planets": "updated_at DESC, body_name",
+        "samples": "updated_at DESC, species",
+        "processed_events": "processed_at DESC, id",
+    }
+
     def __init__(self, path):
         self.path = path
         self.conn = sqlite3.connect(path, check_same_thread=False)
@@ -269,6 +277,59 @@ class Database:
         else:
             cur = self.conn.execute("SELECT * FROM samples")
         return [dict(row) for row in cur.fetchall()]
+
+    def management_snapshot(self, limit=100):
+        tables = []
+        for name, order_by in self.MANAGEMENT_TABLES.items():
+            count = self.conn.execute(
+                f"SELECT COUNT(*) FROM {name}"
+            ).fetchone()[0]
+            rows = self.conn.execute(
+                f"SELECT * FROM {name} ORDER BY {order_by} LIMIT ?",
+                (limit,),
+            ).fetchall()
+            tables.append({
+                "name": name,
+                "count": count,
+                "rows": [dict(row) for row in rows],
+            })
+
+        try:
+            size = os.path.getsize(self.path) if self.path != ":memory:" else None
+        except OSError:
+            size = None
+        return {
+            "path": os.path.abspath(self.path) if self.path != ":memory:" else self.path,
+            "size_bytes": size,
+            "tables": tables,
+        }
+
+    def backup_to(self, destination):
+        source = os.path.abspath(self.path) if self.path != ":memory:" else None
+        target = os.path.abspath(destination)
+        if source and os.path.normcase(source) == os.path.normcase(target):
+            raise ValueError("Choose a backup path different from the active database.")
+
+        backup = sqlite3.connect(target)
+        try:
+            self.conn.backup(backup)
+        finally:
+            backup.close()
+
+    def export_table_csv(self, table_name, destination):
+        if table_name not in self.MANAGEMENT_TABLES:
+            raise ValueError(f"Unsupported database table: {table_name}")
+
+        cursor = self.conn.execute(f"SELECT * FROM {table_name}")
+        with open(destination, "w", newline="", encoding="utf-8-sig") as output:
+            writer = csv.writer(output)
+            writer.writerow(column[0] for column in cursor.description)
+            writer.writerows(cursor.fetchall())
+
+    def integrity_check(self):
+        return [
+            row[0] for row in self.conn.execute("PRAGMA quick_check")
+        ]
 
     def close(self):
         self.conn.close()

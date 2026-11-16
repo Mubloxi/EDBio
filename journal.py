@@ -2,23 +2,21 @@
 
 import json
 import os
-import glob
-import re
 import threading
 import time
 from datetime import datetime, timezone
 
 from PySide6.QtCore import QThread, Signal
+from journal_native import JournalTailReader, journal_files as _native_journal_files
 
 
 # journal events EDBio cares about.
 RELEVANT_EVENTS = {
     "FileHeader", "LoadGame", "Location", "FSDJump", "Scan",
     "FSSBodySignals", "SAASignalsFound", "Touchdown", "Liftoff",
-    "Disembark", "Embark", "ScanOrganic", "CodexEntry", "SellOrganicData",
+    "Disembark", "Embark", "Docked", "Undocked", "ScanOrganic",
+    "CodexEntry", "SellOrganicData",
 }
-
-JOURNAL_GLOB = "Journal.*.log"
 
 # How often the monitor polls the active journal file in seconds (ai did this part)
 POLL_INTERVAL = 1.0
@@ -31,20 +29,11 @@ def default_journal_dir():
     )
 
 
-def _journal_sort_key(path):
-    """Sort journals by last write time (some game builds use odd filenames)."""
-    try:
-        return (os.path.getmtime(path), os.path.basename(path))
-    except OSError:
-        return (0.0, os.path.basename(path))
-
-
 def journal_files(journal_dir):
     """Return Journal log files sorted oldest -> newest by modification time."""
     if not journal_dir or not os.path.isdir(journal_dir):
         return []
-    files = glob.glob(os.path.join(journal_dir, JOURNAL_GLOB))
-    return sorted(files, key=_journal_sort_key)
+    return _native_journal_files(journal_dir)
 
 
 def current_journal_file(journal_dir):
@@ -65,16 +54,30 @@ def parse_event_line(line):
 
 
 class JournalReader:
-    """Incremental reader for a single journal file with partial-line buffering."""
+    """Rust-backed incremental reader for a single journal file."""
 
     def __init__(self, path):
-        self.path = path
-        self.position = 0
-        self.buffer = ""
+        self._path = path
+        self._native = JournalTailReader(path)
         self.inode = None
         self.mtime = None
         self.size = None
         self._refresh_stat()
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        if value != self._path:
+            self._path = value
+            self._native = JournalTailReader(value)
+            self._refresh_stat()
+
+    @property
+    def position(self):
+        return self._native.position
 
     def _refresh_stat(self):
         try:
@@ -103,33 +106,15 @@ class JournalReader:
             return
 
         if self.rotated():
-            # File was rotated: start from the beginning.
-            self.position = 0
-            self.buffer = ""
+            self._native.reset()
             self._refresh_stat()
 
         try:
-            with open(self.path, "r", encoding="utf-8", errors="replace") as f:
-                f.seek(self.position)
-                data = f.read()
-                self.position = f.tell()
+            events = self._native.read_new_events()
         except OSError:
             return
 
-        if not data:
-            return
-
-        self.buffer += data
-        lines = self.buffer.split("\n")
-
-        # The last element is a partial line unless the file ends with newline.
-        # Keep it in the buffer until we get more data.
-        self.buffer = lines.pop() if lines else ""
-
-        for line in lines:
-            event = parse_event_line(line)
-            if event is not None:
-                yield event
+        yield from events
 
 
 class JournalMonitor(QThread):
@@ -154,6 +139,7 @@ class JournalMonitor(QThread):
         self.current_system = None
         self.current_body = None
         self.current_commander = None
+        self.current_station = None
         self.last_event_time = "--:--:--"
         self.game_running = False
         self.journal_connected = False
@@ -236,6 +222,12 @@ class JournalMonitor(QThread):
         elif event_type == "FSDJump":
             self.current_system = event.get("StarSystem")
             self.current_body = None
+            self.current_station = None
+        elif event_type == "Docked":
+            self.current_system = event.get("StarSystem") or self.current_system
+            self.current_station = event.get("StationName")
+        elif event_type == "Undocked":
+            self.current_station = None
         elif event_type == "Scan":
             body_name = event.get("BodyName")
             if body_name:
@@ -250,7 +242,10 @@ class JournalMonitor(QThread):
     def _signature(self, event):
         """Dedup key: timestamp + event + identifying fields."""
         parts = [event.get("timestamp", ""), event.get("event", "")]
-        for key in ("SystemAddress", "BodyID", "BodyName", "Genus", "Species", "ScanType"):
+        for key in (
+            "SystemAddress", "BodyID", "BodyName", "StationName",
+            "Genus", "Species", "ScanType",
+        ):
             if key in event:
                 parts.append(str(event[key]))
         return "|".join(parts)
@@ -279,6 +274,9 @@ class JournalMonitor(QThread):
         lon = data.get("Longitude")
         radius = data.get("PlanetRadius")
         body = data.get("BodyName")
+        station = data.get("StationName")
+        if station:
+            self.current_station = station
         position = {"lat": lat, "lon": lon, "radius": radius, "body": body}
         if position != self._last_position:
             self._last_position = position
@@ -296,6 +294,7 @@ class JournalMonitor(QThread):
             "system": self.current_system,
             "commander": self.current_commander,
             "body": self.current_body,
+            "station": self.current_station,
             "last_event_time": self.last_event_time,
         }
 

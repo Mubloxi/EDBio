@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QDialogButtonBox,
 )
 
-from ..config import APP_NAME, VERSION
+from config import APP_NAME, VERSION
 
 
 class AboutDialog(QDialog):
@@ -23,12 +23,15 @@ class AboutDialog(QDialog):
             "A small exobiology tool for Elite Dangerous. Reads the game journal "
             "to track biological samples, predict possible species, and show "
             "estimated Vista Genomics payouts.\n\n"
-            "Built with Python, PySide6 and SQLite.\n\n"
+            "Built with Python, Rust, TypeScript, PySide6, Qt WebEngine and SQLite.\n\n"
+            "Created by Mu_bloxi (CMDR MUBLOXI).\n"
+            '<a href="https://github.com/Mubloxi/EDBio">GitHub repository</a>\n\n'
             "EDBio is not affiliated with Frontier Developments.\n\n"
             "Third-party data and libraries are credited in README.md and LICENSE."
         )
         lbl = QLabel(text)
         lbl.setWordWrap(True)
+        lbl.setOpenExternalLinks(True)
         lbl.setStyleSheet("color: #cccccc;")
         layout.addWidget(lbl)
 

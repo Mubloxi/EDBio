@@ -7,31 +7,27 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from ..audio import available_sounds
+from audio import DEFAULT_SOUND, available_sounds
 
 
 def populate_sound_combo(combo, selected_path):
     sounds = available_sounds()
     model = QStandardItemModel(combo)
-    current_category = None
 
     for sound in sounds:
-        if sound["category"] != current_category:
-            current_category = sound["category"]
-            header = QStandardItem(current_category)
-            header.setFlags(Qt.ItemIsEnabled)
-            model.appendRow(header)
-
-        item = QStandardItem(sound["name"])
+        item = QStandardItem(f"[{sound['category']}] {sound['name']}")
         item.setData(sound["path"], Qt.UserRole)
         model.appendRow(item)
 
     combo.setModel(model)
+    combo.setMaxVisibleItems(18)
     index = combo.findData(selected_path, Qt.UserRole)
     if index >= 0:
         combo.setCurrentIndex(index)
+    elif sounds and combo.findData(DEFAULT_SOUND, Qt.UserRole) >= 0:
+        combo.setCurrentIndex(combo.findData(DEFAULT_SOUND, Qt.UserRole))
     elif sounds:
-        combo.setCurrentIndex(1)
+        combo.setCurrentIndex(0)
     return bool(sounds)
 
 

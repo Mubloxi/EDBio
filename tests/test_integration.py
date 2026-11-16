@@ -8,10 +8,10 @@ import time
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QTimer
 
-from edbio.journal import JournalMonitor
-from edbio.database import Database
-from edbio.species import SpeciesDB
-from edbio.processor import JournalProcessor
+from journal import JournalMonitor
+from database import Database
+from species import SpeciesDB
+from processor import JournalProcessor
 
 
 def _event(etype, **fields):

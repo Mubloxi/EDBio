@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QPushButton, QLabel, QHeaderView,
 )
 
-from ..credits import format_credits
+from credits import format_credits
 
 ED_ORANGE = "#ff9900"
 

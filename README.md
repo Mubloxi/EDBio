@@ -14,11 +14,15 @@ payouts. No login, no account, no companion application required.
 - Shows estimated Vista Genomics payouts per species and per planet
 - First footfall multiplier shown as an estimate, never guaranteed
 - History tab with search, filtering, and CSV export (stored in SQLite)
+- Database tab for inspecting saved records and creating SQLite backups
+- Rust-backed incremental journal file reading
 - Always-on-top, minimize to system tray, remembers window size and position
 - Optional sound alert when an FSS scan finds biological signals, with grouped
-  previewable sound choices
+  previewable sound choices and custom MP3, WAV, or OGG imports
 - Optional in-game bio overlay showing the planet, signal count, and identified
   genera when available
+- Journal-based docked-station detection and one-click nearby Vista Genomics
+  station search using Spansh station data
 - Manual journal directory selection
 - Settings dialog and About dialog
 
@@ -26,6 +30,7 @@ payouts. No login, no account, no companion application required.
 
 Pre-built Windows installers are available on the GitHub Releases page for this
 repository. Run `EDBio-Setup.exe` to install EDBio for the current Windows user.
+The desktop shortcut option is checked by default in the installer.
 
 ## How To Use
 
@@ -44,6 +49,12 @@ repository. Run `EDBio-Setup.exe` to install EDBio for the current Windows user.
 Enable the sound alert and the optional overlay in Tools > Settings or View.
 The overlay only appears while Elite Dangerous is the foreground application;
 set the game display mode to Borderless or Windowed for it to appear.
+Add personal alert sounds from Tools > Settings. The Exobiology tab shows your
+docked station and can search Spansh for the nearest listed Vista Genomics
+service using the selected radius (25–1000 ly). Selling prices do not depend on
+which Vista Genomics station you use; the search recommends a nearby turn-in
+location, not a higher payout. Station listings are community data and may be
+out of date; an internet connection is required to search.
 
 The application opens normally even when Elite Dangerous is closed, showing
 saved data from previous sessions.
@@ -65,20 +76,29 @@ cd EDBio
 python -m venv .venv
 .venv\Scripts\activate
 
-# Install dependencies
+# Install Python dependencies
 pip install -r requirements.txt
 
-# Run from source
-python edbio/main.py
+# Build the Rust reader and TypeScript database panel for source runs
+python build_exe.py --components-only
 
-# Build the standalone Windows executable
+# Run from source
+python main.py
+
+# Build the standalone Windows executable (also builds Rust and TypeScript)
 python build_exe.py
 
 # Build the per-user Windows installer (requires Inno Setup 6)
 ISCC.exe installer\EDBio.iss
 ```
 
-The executable and installer are written to `dist\`.
+The source build requires Python 3.12+, PySide6-WebEngine, Node.js/npm,
+Rust/Cargo, and the Microsoft C++ Build Tools workload. `--components-only`
+configures the local Rust extension and compiles the web panel before running
+from source. The executable and installer are written to `dist\`.
+Station searches use the public Spansh stations API
+(`https://spansh.co.uk/api/stations/search`); no API key or commander account
+is required.
 
 ## Known Issues
 
@@ -93,9 +113,14 @@ The executable and installer are written to `dist\`.
 
 ## Credits
 
+Created by **Mu_bloxi (CMDR MUBLOXI)**.
+Project: [Mubloxi/EDBio](https://github.com/Mubloxi/EDBio)
+
 - PySide6 (Qt for Python) - LGPL
 - Pillow - HPND
 - PyInstaller - GPL (build tool only, not distributed with the app)
+- PyO3 - Apache-2.0 / MIT
+- TypeScript - Apache-2.0
 - pytest - MIT
 
 Biological reference data and Vista Genomics prices are compiled from public

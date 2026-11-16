@@ -6,20 +6,24 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtWidgets import QApplication, QComboBox
 
-from edbio.audio import DEFAULT_SOUND
-from edbio.credits import CreditCalculator
-from edbio.database import Database
-from edbio.journal import JournalMonitor
-from edbio.processor import JournalProcessor
-from edbio.species import SpeciesDB
-from edbio.ui import bio_overlay
-from edbio.ui.bio_overlay import BioOverlay
-from edbio.ui.exobiology_tab import ExobiologyTab
-from edbio.ui.main_window import MainWindow
-from edbio.ui.sound_picker import FirstRunDialog, populate_sound_combo
+from audio import DEFAULT_SOUND
+from credits import CreditCalculator
+from database import Database
+from journal import JournalMonitor
+from processor import JournalProcessor
+from species import SpeciesDB
+from ui import bio_overlay
+from ui.bio_overlay import BioOverlay
+from ui.exobiology_tab import ExobiologyTab
+from ui.main_window import MainWindow
+from ui.settings_dialog import SettingsDialog
+from ui.sound_picker import FirstRunDialog, populate_sound_combo
 
 
 class WindowSettings:
+    def journal_dir(self):
+        return ""
+
     def window_geometry(self):
         return None
 
@@ -41,10 +45,22 @@ class WindowSettings:
     def sound_enabled(self):
         return True
 
+    def notify_valuable(self):
+        return True
+
     def selected_sound(self):
         return DEFAULT_SOUND
 
+    def vista_search_radius(self):
+        return 50
+
+    def min_value_threshold(self):
+        return 0
+
     def set_current_tab(self, index):
+        pass
+
+    def set_vista_search_radius(self, value):
         pass
 
     def set_window_geometry(self, geometry):
@@ -87,18 +103,54 @@ def test_exobiology_tab_explains_empty_species_table():
     assert "No species predictions yet" in tab.lbl_empty.text()
 
 
+def test_main_window_includes_database_management_tab():
+    app = QApplication.instance() or QApplication([])
+    database = Database(":memory:")
+    processor = JournalProcessor(database, SpeciesDB())
+    window = MainWindow(processor, JournalMonitor(""), WindowSettings())
+
+    assert window.tabs.count() == 4
+    assert window.tabs.tabText(3) == "Database"
+    assert window.tab_database.bridge.database is database
+
+    window.close()
+    database.close()
+
+
 def test_sound_picker_groups_and_selects_the_default():
     app = QApplication.instance() or QApplication([])
     combo = QComboBox()
 
     assert populate_sound_combo(combo, "random ass/notification.mp3")
     assert combo.currentData() == "random ass/notification.mp3"
-    assert "French" in [combo.itemText(i) for i in range(combo.count())]
+    assert any(item.startswith("[French]") for item in
+               [combo.itemText(i) for i in range(combo.count())])
 
     previews = []
     dialog = FirstRunDialog(DEFAULT_SOUND, previews.append)
     dialog.preview_button.click()
     assert previews == [DEFAULT_SOUND]
+
+
+def test_settings_preview_is_enabled_and_calls_the_player(monkeypatch):
+    app = QApplication.instance() or QApplication([])
+    database = Database(":memory:")
+    processor = JournalProcessor(database, SpeciesDB())
+    window = MainWindow(processor, JournalMonitor(""), WindowSettings())
+    played = []
+    window._play_sound = played.append
+
+    def preview_from_settings(dialog):
+        assert dialog.btn_preview.isEnabled()
+        dialog._preview_sound()
+        return 0
+
+    monkeypatch.setattr(SettingsDialog, "exec", preview_from_settings)
+    window.open_settings()
+    assert played == [DEFAULT_SOUND]
+
+    window.close()
+    database.close()
 
 
 def test_overlay_is_hidden_when_the_game_is_not_foreground(monkeypatch):

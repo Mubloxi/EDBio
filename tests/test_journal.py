@@ -7,8 +7,8 @@ import time
 
 import pytest
 
-from edbio.journal import JournalReader, journal_files, current_journal_file, parse_event_line
-from edbio.processor import JournalProcessor
+from journal import JournalReader, journal_files, current_journal_file, parse_event_line
+from processor import JournalProcessor
 
 
 def _write(path, text):
@@ -108,9 +108,6 @@ def test_journal_rotation():
 
     # Point reader at the new file.
     reader.path = path2
-    reader.position = 0
-    reader.buffer = ""
-    reader._refresh_stat()
     events = list(reader.read_new_events())
     assert len(events) == 1
     assert events[0]["event"] == "LoadGame"
@@ -127,8 +124,8 @@ def test_duplicate_event_prevention():
     events = list(reader.read_new_events())
     assert len(events) == 2  # reader yields both lines
 
-    from edbio.species import SpeciesDB
-    from edbio.database import Database
+    from species import SpeciesDB
+    from database import Database
     db = Database(":memory:")
     sdb = SpeciesDB()
     proc = JournalProcessor(db, sdb)
@@ -183,7 +180,7 @@ def test_current_journal_ignores_bad_filenames():
 
 
 def test_status_flags_integer_does_not_crash():
-    from edbio.journal import JournalMonitor
+    from journal import JournalMonitor
 
     tmp = tempfile.mkdtemp()
     with open(os.path.join(tmp, "Status.json"), "w", encoding="utf-8") as f:
@@ -196,7 +193,7 @@ def test_status_flags_integer_does_not_crash():
 
 
 def test_live_event_signal_excludes_existing_journal_history():
-    from edbio.journal import JournalMonitor
+    from journal import JournalMonitor
 
     tmp = tempfile.mkdtemp()
     path = os.path.join(tmp, "Journal.2026-11-15T172402.01.log")
@@ -227,3 +224,20 @@ def test_live_event_signal_excludes_existing_journal_history():
 
     assert len(live) == 1
     assert live[0]["BodyName"] == "Planet B"
+
+
+def test_docked_and_undocked_events_update_station_status():
+    from journal import JournalMonitor
+
+    monitor = JournalMonitor("")
+    statuses = []
+    monitor.status_changed.connect(statuses.append)
+
+    monitor._process_event(json.loads(_event(
+        "Docked", StarSystem="Sol", StationName="Daedalus"
+    )))
+    assert statuses[-1]["station"] == "Daedalus"
+    assert statuses[-1]["system"] == "Sol"
+
+    monitor._process_event(json.loads(_event("Undocked")))
+    assert statuses[-1]["station"] is None
