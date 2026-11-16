@@ -20,22 +20,11 @@ bio-signal information while Elite Dangerous is the foreground application.
 The nearby Vista Genomics search uses public Spansh station data to help find a
 turn-in location; station listings may be out of date.
 
-## Screenshots
+## Screenshot
 
-These database-panel screenshots use synthetic example rows for illustration;
-they do not show a commander's journal or saved discovery data.
+![EDBio Exobiology tab captured from the running Windows application](docs/screenshots/edbio-exobiology.png)
 
-![EDBio database panel showing example history records and database tools](docs/screenshots/database-history.png)
-
-*Browse discovery history, check database status, and access CSV export and backup tools.*
-
-![EDBio database panel with an expanded example history record](docs/screenshots/database-record-details-example.png)
-
-*Expand a history row to inspect its fields. Example values are illustrative.*
-
-![EDBio database panel showing processed journal events](docs/screenshots/database-processed-events.png)
-
-*Review the journal events EDBio has already processed. The rows shown are synthetic examples.*
+*Direct capture of EDBio v1.3.0. The live session had no biological signals; no mock rows or browser-rendered UI are shown. The interface may differ from the v1.0.0 installer.*
 
 ## Features
 
