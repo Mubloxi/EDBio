@@ -1,94 +1,98 @@
 # EDBio
 
-EDBio is a standalone Windows desktop tool for Elite Dangerous: Odyssey
-commanders who want to keep their exobiology work organized. It follows the
-game's journal as it changes and brings the current commander, system, planet,
-biological signals, sample progress, and estimated Vista Genomics value into
-one compact application. No account or companion service is required.
+EDBio is a Windows app for Elite Dangerous: Odyssey. It reads your game journal
+and helps you track bio signals, possible species, samples, credits, and past
+finds. It works on your PC. You do not need an account.
 
-Use EDBio to move from a planet scan to completed genetic samples: review
-possible species, see what is known about their requirements, track the
-Log / Sample / Analyse sequence, and check the distance needed before taking
-the next sample. Predictions are identified as predictions, not confirmed
-discoveries, and credit values and first-footfall bonuses are estimates rather
-than guaranteed payouts.
+Species are shown as predictions, not confirmed finds. Credit amounts and
+first footfall bonuses are estimates. The game decides the real payout.
 
-EDBio keeps discovery history in a local SQLite database, with search, CSV
-export, database inspection, and backups. Optional sound alerts can notify you
-when an FSS scan finds biological signals, and an optional overlay can show
-bio-signal information while Elite Dangerous is the foreground application.
-The nearby Vista Genomics search uses public Spansh station data to help find a
-turn-in location; station listings may be out of date.
+Your history stays in a local SQLite database. You can search it, export it to
+CSV, view saved data, and make backups. You can also turn on sound alerts and
+an in-game bio overlay. The Spansh search can help find a nearby Vista Genomics
+station. Its station list may be out of date.
 
-## Screenshot
+## Screenshots
 
-![EDBio Exobiology tab captured from the running Windows application](docs/screenshots/edbio-exobiology.png)
+These are screenshots of the Windows app. The commander, system, planets, and
+bio data are fake demo data. They are not from a live game session.
 
-*Direct capture of EDBio v1.3.0. The live session had no biological signals; no mock rows or browser-rendered UI are shown. The interface may differ from the v1.0.0 installer.*
+### Normal theme
+
+![Exobiology tab in the normal theme](docs/screenshots/edbio-exobiology.png)
+![Planets tab in the normal theme](docs/screenshots/edbio-planets.png)
+![History tab in the normal theme](docs/screenshots/edbio-history.png)
+![Settings dialog in the normal theme](docs/screenshots/edbio-settings.png)
+![Database tab in the normal theme](docs/screenshots/edbio-database.png)
+
+### OLED theme
+
+![Exobiology tab in the OLED theme](docs/screenshots/edbio-oled-exobiology.png)
+![Planets tab in the OLED theme](docs/screenshots/edbio-oled-planets.png)
+![History tab in the OLED theme](docs/screenshots/edbio-oled-history.png)
+![Database tab in the OLED theme](docs/screenshots/edbio-oled-database.png)
 
 ## Features
 
-- Reads Elite Dangerous journal files in real time (incremental, handles rotation)
-- Detects the current commander, system, and planet from the journal
-- Lists biological signals and predicted species for the active planet
-- Tracks genetic sample progress using ScanOrganic events (Log / Sample / Analyse)
-- Calculates surface distance from the reference sample using great-circle math
-- Shows estimated Vista Genomics payouts per species and per planet
-- First footfall multiplier shown as an estimate, never guaranteed
-- History tab with search, filtering, and CSV export (stored in SQLite)
-- Database tab for inspecting saved records and creating SQLite backups
-- Rust-backed incremental journal file reading
-- Always-on-top, minimize to system tray, remembers window size and position
-- Optional sound alert when an FSS scan finds biological signals, with grouped
-  previewable sound choices and custom MP3, WAV, or OGG imports
-- Optional in-game bio overlay showing the planet, signal count, and identified
-  genera when available
-- Journal-based docked-station detection and one-click nearby Vista Genomics
-  station search using Spansh station data
-- Manual journal directory selection
-- Settings dialog and About dialog
+- Reads your game journal and keeps up with new log files
+- Shows your commander, system, and planet
+- Shows bio signals and possible species for the current planet
+- Tracks the Log / Sample / Analyse steps and the distance needed for the next sample
+- Shows estimated Vista Genomics credits for species and planets
+- Shows first footfall as an estimate
+- Saves your finds in a history you can search and export to CSV
+- Lets you check saved data and back up the database
+- Uses a Rust reader to load journal files
+- Can stay on top, go to the system tray, and remember its window size
+- Can play a sound when an FSS scan finds bio signals
+- Includes built-in sounds and lets you add MP3, WAV, and OGG files
+- Can show the planet, signal count, and known genera in an in-game overlay
+- Finds your docked station from the journal and can search Spansh for a nearby
+  Vista Genomics station
+- Finds your journal folder and reads old logs into the database
+- Lets you choose the journal folder yourself if needed
+- Includes Settings and About screens
 
 ## Download
 
-Pre-built Windows installers are available on the GitHub Releases page for this
-repository. [Download the EDBio 1.0.0 Windows installer](https://github.com/Mubloxi/EDBio/releases/download/v1.0.0/EDBio-Setup-1.0.0.exe)
-or open the [GitHub Releases page](https://github.com/Mubloxi/EDBio/releases).
-Run `EDBio-Setup-1.0.0.exe` to install EDBio for the current Windows user. The
-desktop shortcut option is checked by default in the installer.
+Get the [EDBio 1.0.0 Windows installer](https://github.com/Mubloxi/EDBio/releases/download/v1.0.0/EDBio-Setup-1.0.0.exe)
+or see the [GitHub Releases page](https://github.com/Mubloxi/EDBio/releases).
+Run `EDBio-Setup-1.0.0.exe` to install the app for your Windows user. The
+installer offers a desktop shortcut, checked by default.
 
 ## How To Use
 
-1. Download and run `EDBio-Setup-1.0.0.exe`. Python does not need to be
-   installed.
-2. On first launch, choose a bio-alert sound and use Preview to test it.
-3. Start Elite Dangerous and load into a game.
-4. EDBio detects the journal directory automatically
-   (%USERPROFILE%\Saved Games\Frontier Developments\Elite Dangerous\).
-   If it doesn't, use File > Journal Directory to pick it manually.
-5. Fly to a planet, scan it, and use the Surface Area Scanner. Biological
-   signals, predicted species, and sample tracking appear in the Exobiology tab.
-6. Land and collect genetic samples. Sample progress, distance required, and
-   distance remaining update as you move.
-7. Use the History tab to review past discoveries and export to CSV.
+1. Download and run `EDBio-Setup-1.0.0.exe`. You do not need to install Python.
+2. The first time you open EDBio, pick a sound and use Preview to hear it.
+3. Start Elite Dangerous and load into the game.
+4. EDBio finds your journal folder and reads its old logs. If it cannot find the
+   folder, use File > Journal Directory to choose it.
+5. Scan a planet and use the Surface Area Scanner. Open the Exobiology tab to
+   see bio signals, possible species, and sample progress.
+6. Land and take samples. EDBio updates the sample count and distance as you move.
+7. Open History to check your past finds or export them to CSV.
 
-Enable the sound alert and the optional overlay in Tools > Settings or View.
-The overlay only appears while Elite Dangerous is the foreground application;
-set the game display mode to Borderless or Windowed for it to appear.
-Add personal alert sounds from Tools > Settings. The Exobiology tab shows your
-docked station and can search Spansh for the nearest listed Vista Genomics
-service using the selected radius (25 to 1000 ly). Selling prices do not depend on
-which Vista Genomics station you use; the search recommends a nearby turn-in
-location, not a higher payout. Station listings are community data and may be
-out of date; an internet connection is required to search.
+Turn on sound alerts and the overlay in Tools > Settings or View. EDBio starts
+with the normal dark gray theme. Choose View > OLED theme for a mostly black
+screen. This also changes the Database tab.
 
-The application opens normally even when Elite Dangerous is closed, showing
-saved data from previous sessions.
+The overlay only shows while Elite Dangerous is the active window. Set the
+game to Borderless or Windowed mode to use it.
+
+You can add your own sounds in Tools > Settings. The Exobiology tab shows your
+docked station and can search Spansh for a nearby Vista Genomics station.
+Choose a search range from 25 to 1000 ly. The station does not change your
+payout. Spansh data may be out of date, and station search needs an internet
+connection.
+
+EDBio can also open when the game is closed. It will show data saved from
+earlier sessions.
 
 ## Requirements
 
 - Windows 10 or Windows 11
-- Elite Dangerous with Odyssey (for journal-based tracking)
-- No Python installation required for the pre-built executable
+- Elite Dangerous with Odyssey, if you want journal tracking
+- No Python needed for the installer
 
 ## Building From Source
 
@@ -117,24 +121,23 @@ python build_exe.py
 ISCC.exe installer\EDBio.iss
 ```
 
-The source build requires Python 3.12+, PySide6-WebEngine, Node.js/npm,
-Rust/Cargo, and the Microsoft C++ Build Tools workload. `--components-only`
-configures the local Rust extension and compiles the web panel before running
-from source. The executable and installer are written to `dist\`.
-Station searches use the public Spansh stations API
-(`https://spansh.co.uk/api/stations/search`); no API key or commander account
-is required.
+To build from source, you need Python 3.12 or newer, PySide6-WebEngine,
+Node.js/npm, Rust/Cargo, and Microsoft C++ Build Tools.
+`--components-only` builds the Rust reader and database panel so you can run
+from source. The app and installer are saved in `dist\`.
+
+Station search uses Spansh public data
+(`https://spansh.co.uk/api/stations/search`). You do not need an API key or
+commander account.
 
 ## Known Issues
 
-- Species prediction relies on community-documented environmental requirements.
-  Some species have incomplete requirement data and are shown with whatever is
-  known; missing requirements do not prevent a prediction but reduce confidence.
-- First footfall bonuses are estimates. The game determines actual first
-  footfall eligibility, which EDBio cannot verify from the journal.
-- Genetic distance tracking requires the player to be on the planet surface
-  with latitude and longitude available (Touchdown event). Without coordinates,
-  distance is shown as Unknown.
+- Some species data is incomplete. EDBio shows what is known, but may list
+  extra possible species when details are missing.
+- The game decides who gets first footfall. EDBio cannot check this from the
+  journal, so the bonus is only an estimate.
+- Distance tracking needs your location on the planet. If the journal has no
+  latitude or longitude, EDBio shows the distance as Unknown.
 
 ## Credits
 
@@ -148,16 +151,14 @@ Project: [Mubloxi/EDBio](https://github.com/Mubloxi/EDBio)
 - TypeScript - Apache-2.0
 - pytest - MIT
 
-Biological reference data and Vista Genomics prices are compiled from public
-Elite Dangerous community documentation (ED-DSN, Canonn, Elite Dangerous Wiki).
-Species names, planetary data, and Elite Dangerous content are the property of
-Frontier Developments plc.
+Bio data and Vista Genomics prices come from public Elite Dangerous community
+sources, including ED-DSN, Canonn, and the Elite Dangerous Wiki. Elite
+Dangerous and its names belong to Frontier Developments plc.
 
-This project does not incorporate code from EDMC BioScan (GPL) or EDEXO
-(PolyForm Noncommercial / CC BY-NC-SA), both of which carry incompatible
-licenses for this project.
+EDBio does not use code from EDMC BioScan or EDEXO because their licenses do
+not fit this project.
 
 ## Disclaimer
 
-EDBio is not affiliated with Frontier Developments, the developers of Elite
-Dangerous. Elite Dangerous is a trademark of Frontier Developments plc.
+EDBio is not made by or connected to Frontier Developments. Elite Dangerous is
+a trademark of Frontier Developments plc.
