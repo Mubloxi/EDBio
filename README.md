@@ -1,5 +1,16 @@
 # EDBio
 
+[![Windows](https://img.shields.io/badge/platform-Windows-blue)](https://github.com/Mubloxi/EDBio/releases)
+[![Version](https://img.shields.io/badge/version-1.0.0-ff9900)](https://github.com/Mubloxi/EDBio/releases/tag/v1.0.0)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.12+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+
+![EDBio Windows app](docs/EDBio-social-preview.png)
+
+**[Download for Windows](https://github.com/Mubloxi/EDBio/releases/latest)** |
+**[View screenshots](#screenshots)** |
+**[Report a problem](https://github.com/Mubloxi/EDBio/issues)**
+
 EDBio is a Windows app for Elite Dangerous: Odyssey. It reads your game journal
 and helps you track bio signals, possible species, samples, credits, and past
 finds. It works on your PC. You do not need an account.

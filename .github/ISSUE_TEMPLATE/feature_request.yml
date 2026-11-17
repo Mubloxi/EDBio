@@ -1,0 +1,17 @@
+name: Feature request
+description: Suggest a new EDBio feature
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What should EDBio do?
+      description: Describe the feature and the problem it solves.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Extra details
+      description: Include examples or screenshots if useful.
