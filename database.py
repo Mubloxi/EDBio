@@ -98,12 +98,13 @@ class Database:
         return cur.fetchone() is not None
 
     def mark_processed(self, event_id, event_type, timestamp):
-        self.conn.execute(
+        cursor = self.conn.execute(
             "INSERT OR IGNORE INTO processed_events (id, event_type, timestamp, processed_at) "
             "VALUES (?, ?, ?, ?)",
             (event_id, event_type, timestamp, datetime.now(timezone.utc).isoformat()),
         )
         self.conn.commit()
+        return cursor.rowcount == 1
 
     # --- planets ---
 

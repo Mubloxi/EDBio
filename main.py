@@ -8,7 +8,7 @@ if _root not in sys.path:
     sys.path.insert(0, _root)
 
 from config import APP_NAME, Settings
-from journal import JournalMonitor
+from journal import JournalMonitor, detect_journal_dir
 from database import Database
 from species import SpeciesDB
 from processor import JournalProcessor
@@ -37,12 +37,14 @@ def main():
         app.setWindowIcon(QIcon(ICON_PATH))
 
     settings = Settings()
+    journal_dir = detect_journal_dir(settings.journal_dir())
+    settings.set_journal_dir(journal_dir)
 
     db = Database(DB_PATH)
     species_db = SpeciesDB()
     processor = JournalProcessor(db, species_db)
 
-    monitor = JournalMonitor(settings.journal_dir())
+    monitor = JournalMonitor(journal_dir)
 
     window = MainWindow(processor, monitor, settings, ICON_PATH)
     window.show()

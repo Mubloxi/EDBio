@@ -59,10 +59,35 @@ def test_planet_persistence():
     assert planet["estimated_value"] == 50000000
 
 
+def test_processor_can_restore_selected_planet_from_database():
+    from processor import JournalProcessor
+    from species import SpeciesDB
+
+    db = Database(":memory:")
+    db.upsert_planet({
+        "system_address": 1,
+        "body_id": 2,
+        "system_name": "Sol",
+        "body_name": "Sol 3",
+        "signals": [{"Type_Localised": "Biological", "Count": 2}],
+        "genuses": ["Stratum"],
+        "radius": 1000000,
+    })
+    processor = JournalProcessor(db, SpeciesDB())
+    processor.set_system("Sol", 1)
+    processor.set_body("Sol 3")
+
+    planet = processor.current_planet()
+    assert planet["body_name"] == "Sol 3"
+    assert processor.body_genuses["Sol 3"] == ["Stratum"]
+    assert processor.signals["Sol 3"]["biological_count"] == 2
+    db.close()
+
+
 def test_processed_event_dedup():
     db = Database(":memory:")
     assert db.is_processed("evt1") is False
-    db.mark_processed("evt1", "Scan", "2023-05-01T12:00:00Z")
+    assert db.mark_processed("evt1", "Scan", "2023-05-01T12:00:00Z") is True
     assert db.is_processed("evt1") is True
     # mark_processed is idempotent
-    db.mark_processed("evt1", "Scan", "2023-05-01T12:00:00Z")
+    assert db.mark_processed("evt1", "Scan", "2023-05-01T12:00:00Z") is False

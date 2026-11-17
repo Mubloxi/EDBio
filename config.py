@@ -47,6 +47,14 @@ class Settings:
     def set_journal_dir(self, path):
         self.set("journal_dir", path)
 
+    def theme(self):
+        return "oled" if self.get("theme", "classic") == "oled" else "classic"
+
+    def set_theme(self, theme):
+        if theme not in ("classic", "oled"):
+            raise ValueError(f"Unsupported theme: {theme}")
+        self.set("theme", theme)
+
     def always_on_top(self):
         return bool(self.get("always_on_top", False))
 

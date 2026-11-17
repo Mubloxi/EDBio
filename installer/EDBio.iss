@@ -1,6 +1,9 @@
 #define AppName "EDBio"
 #define AppVersion "1.0.0"
 #define AppExeName "EDBio.exe"
+#ifndef AppExeSource
+  #define AppExeSource "..\dist\EDBio.exe"
+#endif
 
 [Setup]
 AppId={{716F7055-55A7-497B-90DF-6F61F4C4EA4A}
@@ -22,7 +25,7 @@ WizardStyle=modern
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: checkedonce
 
 [Files]
-Source: "..\dist\{#AppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#AppExeSource}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]

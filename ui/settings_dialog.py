@@ -106,7 +106,6 @@ class SettingsDialog(QDialog):
                                                 self.settings.journal_dir())
         if path:
             self.journal_edit.setText(path)
-            self.settings.set_journal_dir(path)
 
     def _preview_sound(self):
         path = self.sound_combo.currentData()
@@ -139,6 +138,7 @@ class SettingsDialog(QDialog):
         self.lbl_sound_status.setText(f"Sound preview failed: {message}")
 
     def accept(self):
+        self.settings.set_journal_dir(self.journal_edit.text())
         self.settings.set_always_on_top(self.ck_ontop.isChecked())
         self.settings.set_minimize_to_tray(self.ck_tray.isChecked())
         self.settings.set_notify_valuable(self.ck_notify.isChecked())

@@ -1,5 +1,7 @@
 """Processes journal events into application state: planets, predictions, samples."""
 
+import hashlib
+import json
 import re
 from datetime import datetime, timezone
 
@@ -37,6 +39,8 @@ class JournalProcessor:
         self.planet_radius = None
         self.current_lat = None
         self.current_lon = None
+        self._replaying = False
+        self._event_is_new = True
 
         # Callbacks for UI to register.
         self.on_planet_updated = None
@@ -62,35 +66,61 @@ class JournalProcessor:
         if system_name != self.current_system:
             self.current_system = system_name
             self.system_address = system_address
-            self.bodies = {}
-            self.signals = {}
-            self.body_genuses = {}
-            self.trackers = {}
-            self.planet_radius = None
+            self._clear_planet_state()
             # Persist planets for the old system are already in the DB.
 
     def set_body(self, body_name):
         self.current_body = body_name
 
+    def _clear_planet_state(self):
+        self.current_body = None
+        self.bodies = {}
+        self.signals = {}
+        self.body_genuses = {}
+        self.trackers = {}
+        self.planet_radius = None
+        self.current_lat = None
+        self.current_lon = None
+
     # --- event handling ---
 
+    def begin_replay(self):
+        self._replaying = True
+        self.current_system = None
+        self.current_commander = None
+        self.current_station = None
+        self.system_address = None
+        self.current_lat = None
+        self.current_lon = None
+        self._clear_planet_state()
+
+    def end_replay(self):
+        self._replaying = False
+
     def handle_event(self, event):
+        event_id = hashlib.sha256(
+            json.dumps(
+                event, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+            ).encode("utf-8")
+        ).hexdigest()
+        self._event_is_new = not self.db.is_processed(event_id)
+
         etype = event.get("event")
 
         if etype == "LoadGame":
             self.current_commander = event.get("Commander")
             self.current_system = event.get("StarSystem")
+            self.system_address = event.get("SystemAddress")
+            self.current_station = None
+            self._clear_planet_state()
         elif etype == "Location":
-            self.current_system = event.get("StarSystem")
+            self.set_system(event.get("StarSystem"), event.get("SystemAddress"))
+            self.current_body = event.get("Body")
         elif etype == "FSDJump":
             self.current_system = event.get("StarSystem")
-            self.current_body = None
+            self.system_address = event.get("SystemAddress")
             self.current_station = None
-            self.bodies = {}
-            self.signals = {}
-            self.body_genuses = {}
-            self.trackers = {}
-            self.planet_radius = None
+            self._clear_planet_state()
         elif etype == "Docked":
             self.current_system = event.get("StarSystem") or self.current_system
             self.current_station = event.get("StationName")
@@ -111,12 +141,18 @@ class JournalProcessor:
         elif etype == "CodexEntry":
             self._handle_codex_entry(event)
 
+        if self._event_is_new:
+            self.db.mark_processed(event_id, etype, event.get("timestamp", ""))
+        return self._event_is_new
+
     def _handle_scan(self, event):
         body_name = event.get("BodyName")
         if not body_name:
             return
         self.set_body(body_name)
 
+        known_signals = self.signals.get(body_name, {}).get("all_signals", [])
+        genuse_names = self.body_genuses.get(body_name, [])
         body = {
             "system_address": event.get("SystemAddress"),
             "body_id": event.get("BodyID"),
@@ -131,8 +167,8 @@ class JournalProcessor:
             "radius": event.get("Radius"),
             "surface_gravity": event.get("SurfaceGravity"),
             "star_type": event.get("StarType"),
-            "signals": [],
-            "genuses": [],
+            "signals": known_signals,
+            "genuses": genuse_names,
             "estimated_value": 0,
             "status": "Scanned",
         }
@@ -221,27 +257,27 @@ class JournalProcessor:
 
         key = (genus, species_name)
         tracker = self.trackers.get(key)
-        if tracker is None:
+        if tracker is None and not self._replaying:
             # Try loading from DB.
             row = self._load_tracker(system_address, body_id, genus, species_name)
             if row:
                 tracker = SampleTracker.from_dict(row)
-            else:
-                tracker = SampleTracker(system_address, body_id, genus, species_name,
-                                        self.planet_radius)
+        if tracker is None:
+            tracker = SampleTracker(system_address, body_id, genus, species_name,
+                                    self.planet_radius)
             # Start the tracker from the current known position, if any.
             if self.current_lat is not None and self.current_lon is not None:
                 tracker.update_position(self.current_lat, self.current_lon)
             self.trackers[key] = tracker
 
         changed = tracker.apply_event(scan_type, self.current_lat, self.current_lon)
-        if changed:
+        if changed and self._event_is_new:
             self.db.upsert_sample(tracker.to_dict())
-            if self.on_sample_updated:
-                self.on_sample_updated(tracker.to_dict())
+        if changed and self.on_sample_updated:
+            self.on_sample_updated(tracker.to_dict())
 
         # If a species was fully analysed, record it in history.
-        if tracker.status == COMPLETE and changed:
+        if tracker.status == COMPLETE and changed and self._event_is_new:
             value = self.species.species_price(species_name) or 0
             self._add_history(
                 system=self.current_system or "Unknown",
@@ -258,7 +294,7 @@ class JournalProcessor:
         body_name = event.get("BodyName") or self.current_body
         entry_name = event.get("Name", "")
         # CodexEntry names are codex strings; we keep it simple and record history.
-        if entry_name:
+        if entry_name and self._event_is_new:
             self._add_history(
                 system=self.current_system or "Unknown",
                 planet=body_name or "Unknown",
@@ -304,6 +340,21 @@ class JournalProcessor:
     def current_planet(self):
         if self.current_body and self.current_body in self.bodies:
             return self.bodies[self.current_body]
+        if self.current_body and self.current_system:
+            for planet in self.db.get_planets(self.current_system):
+                if planet.get("body_name") == self.current_body:
+                    self.bodies[self.current_body] = planet
+                    self.body_genuses[self.current_body] = planet.get("genuses") or []
+                    self.signals[self.current_body] = {
+                        "all_signals": planet.get("signals") or [],
+                        "biological_count": sum(
+                            signal.get("Count", 0)
+                            for signal in planet.get("signals") or []
+                            if signal.get("Type_Localised") == "Biological"
+                        ),
+                    }
+                    self.planet_radius = planet.get("radius")
+                    return planet
         return None
 
     def planets_in_system(self):

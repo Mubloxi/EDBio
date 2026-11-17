@@ -4,6 +4,7 @@ import os
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+from PySide6.QtGui import QPalette
 from PySide6.QtWidgets import QApplication, QComboBox
 
 from audio import DEFAULT_SOUND
@@ -21,8 +22,15 @@ from ui.sound_picker import FirstRunDialog, populate_sound_combo
 
 
 class WindowSettings:
+    def __init__(self):
+        self._theme = "classic"
+        self._journal_dir = ""
+
     def journal_dir(self):
-        return ""
+        return self._journal_dir
+
+    def set_journal_dir(self, path):
+        self._journal_dir = path
 
     def window_geometry(self):
         return None
@@ -41,6 +49,12 @@ class WindowSettings:
 
     def overlay_enabled(self):
         return False
+
+    def theme(self):
+        return self._theme
+
+    def set_theme(self, theme):
+        self._theme = theme
 
     def sound_enabled(self):
         return True
@@ -61,6 +75,27 @@ class WindowSettings:
         pass
 
     def set_vista_search_radius(self, value):
+        pass
+
+    def set_always_on_top(self, value):
+        pass
+
+    def set_minimize_to_tray(self, value):
+        pass
+
+    def set_notify_valuable(self, value):
+        pass
+
+    def set_sound_enabled(self, value):
+        pass
+
+    def set_overlay_enabled(self, value):
+        pass
+
+    def set_selected_sound(self, value):
+        pass
+
+    def set_min_value_threshold(self, value):
         pass
 
     def set_window_geometry(self, geometry):
@@ -112,9 +147,84 @@ def test_main_window_includes_database_management_tab():
     assert window.tabs.count() == 4
     assert window.tabs.tabText(3) == "Database"
     assert window.tab_database.bridge.database is database
+    assert window.tab_database._theme == "classic"
+    assert not window.tab_database._loaded
 
     window.close()
     database.close()
+
+
+def test_oled_theme_is_persisted_and_uses_black_window_palette():
+    app = QApplication.instance() or QApplication([])
+    database = Database(":memory:")
+    settings = WindowSettings()
+    processor = JournalProcessor(database, SpeciesDB())
+    window = MainWindow(processor, JournalMonitor(""), settings)
+
+    window.act_oled_theme.setChecked(True)
+    assert settings.theme() == "oled"
+    assert window.tab_database._theme == "oled"
+    assert window.palette().color(QPalette.Window).name() == "#000000"
+
+    window.act_oled_theme.setChecked(False)
+    assert settings.theme() == "classic"
+    assert window.tab_database._theme == "classic"
+    assert window.palette().color(QPalette.Window).name() != "#000000"
+    window.close()
+    database.close()
+
+
+def test_replay_coalesces_ui_refreshes_until_indexing_finishes():
+    app = QApplication.instance() or QApplication([])
+    database = Database(":memory:")
+    processor = JournalProcessor(database, SpeciesDB())
+    window = MainWindow(processor, JournalMonitor(""), WindowSettings())
+    refreshes = {"exo": 0, "planets": 0, "history": 0}
+    window.tab_exo.refresh = lambda: refreshes.__setitem__(
+        "exo", refreshes["exo"] + 1
+    )
+    window.tab_planets.refresh = lambda: refreshes.__setitem__(
+        "planets", refreshes["planets"] + 1
+    )
+    window.tab_history.refresh = lambda: refreshes.__setitem__(
+        "history", refreshes["history"] + 1
+    )
+
+    window._on_replay_started()
+    window._on_status_changed({
+        "commander": "CMDR",
+        "system": "Sol",
+        "body": "Sol 1",
+        "station": None,
+        "last_event_time": "12:00:00",
+    })
+    window._on_planet_updated({"body_name": "Sol 1"})
+    window._on_sample_updated({})
+    window._on_history_added({})
+
+    assert refreshes == {"exo": 0, "planets": 0, "history": 0}
+
+    window._on_indexing_finished()
+
+    assert refreshes == {"exo": 1, "planets": 1, "history": 1}
+    assert not window._is_replaying
+    window.close()
+    database.close()
+
+
+def test_settings_dialog_saves_journal_folder_only_on_accept(monkeypatch):
+    app = QApplication.instance() or QApplication([])
+    settings = WindowSettings()
+    dialog = SettingsDialog(settings)
+    monkeypatch.setattr(
+        "ui.settings_dialog.QFileDialog.getExistingDirectory",
+        lambda *args: "C:\\Elite Journals",
+    )
+
+    dialog._choose_dir()
+    assert settings.journal_dir() == ""
+    dialog.accept()
+    assert settings.journal_dir() == "C:\\Elite Journals"
 
 
 def test_sound_picker_groups_and_selects_the_default():

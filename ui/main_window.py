@@ -6,7 +6,7 @@ from PySide6.QtCore import QEvent, QTimer, Qt, QUrl
 from PySide6.QtGui import QAction, QPalette, QColor, QIcon
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QTabWidget, QStatusBar, QSystemTrayIcon, QMenu, QMessageBox,
     QFileDialog, QFrame,
 )
@@ -21,7 +21,6 @@ from ui.bio_overlay import BioOverlay
 from ui.sound_picker import FirstRunDialog
 from ui.database_panel import DatabasePanel
 from stations import StationSearchThread
-from journal import default_journal_dir
 from config import APP_NAME, VERSION
 
 
@@ -44,6 +43,9 @@ class MainWindow(QMainWindow):
             self.setWindowIcon(QIcon(icon_path))
 
         self.last_event_time = "--:--:--"
+        self._indexing_progress = None
+        self._is_replaying = False
+        self._pending_status = None
         self._apply_palette()
         self._build_ui()
         self.bio_overlay = BioOverlay(self.settings.overlay_enabled())
@@ -86,17 +88,50 @@ class MainWindow(QMainWindow):
         self._event_timer.start(1000)
 
     def _apply_palette(self):
+        if self.settings.theme() == "oled":
+            colors = {
+                "window": "#000000",
+                "panel": "#080808",
+                "base": "#050505",
+                "alternate": "#101010",
+                "button": "#181818",
+                "border": "#292929",
+            }
+        else:
+            colors = {
+                "window": ED_DARK,
+                "panel": ED_PANEL,
+                "base": ED_PANEL,
+                "alternate": "#3c3c3c",
+                "button": "#4a4a4a",
+                "border": "#444444",
+            }
+
         palette = QPalette()
-        palette.setColor(QPalette.Window, QColor(ED_DARK))
+        palette.setColor(QPalette.Window, QColor(colors["window"]))
         palette.setColor(QPalette.WindowText, QColor("#ffffff"))
-        palette.setColor(QPalette.Base, QColor(ED_PANEL))
-        palette.setColor(QPalette.AlternateBase, QColor("#3c3c3c"))
+        palette.setColor(QPalette.Base, QColor(colors["base"]))
+        palette.setColor(QPalette.AlternateBase, QColor(colors["alternate"]))
         palette.setColor(QPalette.Text, QColor("#ffffff"))
-        palette.setColor(QPalette.Button, QColor("#4a4a4a"))
+        palette.setColor(QPalette.Button, QColor(colors["button"]))
         palette.setColor(QPalette.ButtonText, QColor("#ffffff"))
         palette.setColor(QPalette.Highlight, QColor(ED_ORANGE))
         palette.setColor(QPalette.HighlightedText, QColor("#000000"))
+        palette.setColor(QPalette.ToolTipBase, QColor(colors["panel"]))
+        palette.setColor(QPalette.ToolTipText, QColor("#ffffff"))
         self.setPalette(palette)
+        application = QApplication.instance()
+        if application:
+            application.setPalette(palette)
+        if hasattr(self, "header"):
+            self.header.setStyleSheet(
+                "QFrame#appHeader {"
+                f"background-color: {colors['panel']};"
+                f"border: 1px solid {colors['border']};"
+                "}"
+            )
+        if hasattr(self, "tab_database"):
+            self.tab_database.set_theme(self.settings.theme())
 
     def _build_ui(self):
         central = QWidget()
@@ -107,7 +142,9 @@ class MainWindow(QMainWindow):
 
         # Header: EDBio | Commander | System | Planet
         header = QFrame()
-        header.setStyleSheet(f"QFrame {{ background-color: {ED_PANEL}; border: 1px solid #444; }}")
+        header.setObjectName("appHeader")
+        self.header = header
+        self._apply_palette()
         hlayout = QHBoxLayout(header)
         hlayout.setContentsMargins(8, 4, 8, 4)
 
@@ -136,6 +173,7 @@ class MainWindow(QMainWindow):
         self.tab_planets = PlanetsTab(self.processor)
         self.tab_history = HistoryTab(self.processor)
         self.tab_database = DatabasePanel(self.processor.db)
+        self.tab_database.set_theme(self.settings.theme())
 
         self.tabs.addTab(self.tab_exo, "Exobiology")
         self.tabs.addTab(self.tab_planets, "Planets")
@@ -180,6 +218,12 @@ class MainWindow(QMainWindow):
         view_menu.addAction(self.act_tray)
         view_menu.addSeparator()
         view_menu.addAction(self.act_overlay)
+        view_menu.addSeparator()
+        self.act_oled_theme = QAction("OLED theme (mostly black)", self)
+        self.act_oled_theme.setCheckable(True)
+        self.act_oled_theme.setChecked(self.settings.theme() == "oled")
+        self.act_oled_theme.toggled.connect(self.set_oled_theme)
+        view_menu.addAction(self.act_oled_theme)
 
         tools_menu = menubar.addMenu("&Tools")
         act_settings = QAction("&Settings...", self)
@@ -197,6 +241,11 @@ class MainWindow(QMainWindow):
         self.monitor.status_changed.connect(self._on_status_changed)
         self.monitor.position_changed.connect(self._on_position_changed)
         self.monitor.error_occurred.connect(self._on_error)
+        self.monitor.replay_started.connect(self.processor.begin_replay)
+        self.monitor.replay_started.connect(self._on_replay_started)
+        self.monitor.replay_finished.connect(self.processor.end_replay)
+        self.monitor.replay_finished.connect(self._on_indexing_finished)
+        self.monitor.indexing_progress.connect(self._on_indexing_progress)
         self.tabs.currentChanged.connect(self._on_tab_changed)
 
         self.processor.on_planet_updated = self._on_planet_updated
@@ -207,6 +256,10 @@ class MainWindow(QMainWindow):
     # --- header updates ---
 
     def _on_status_changed(self, status):
+        if self._is_replaying:
+            self._pending_status = status
+            return
+
         self.lbl_cmdr.setText(f"Commander: {status.get('commander') or '--'}")
         self.lbl_system.setText(f"System: {status.get('system') or '--'}")
         self.lbl_planet.setText(f"Planet: {status.get('body') or '--'}")
@@ -221,18 +274,44 @@ class MainWindow(QMainWindow):
         if status.get("body"):
             self.processor.set_body(status.get("body"))
 
+        self._refresh_data_tabs()
+        self._refresh_status_text()
+
+    def _refresh_data_tabs(self):
         self.tab_exo.refresh()
         self.tab_planets.refresh()
         self.tab_history.refresh()
 
-        self._refresh_status_text()
+    def _on_replay_started(self):
+        self._is_replaying = True
+        self._pending_status = None
 
     def _refresh_status_text(self):
-        journal_txt = "Connected" if self.monitor.journal_connected else "Disconnected"
+        if self._indexing_progress:
+            current, total = self._indexing_progress
+            journal_txt = f"Indexing {current}/{total} journal files"
+        else:
+            journal_txt = "Connected" if self.monitor.journal_connected else "Disconnected"
         game_txt = "Running" if self.monitor.game_running else "Stopped"
         self.status_lbl.setText(
             f"Journal: {journal_txt}  |  Game: {game_txt}  |  Last Event: {self.last_event_time}"
         )
+
+    def _on_indexing_progress(self, current, total):
+        self._indexing_progress = (current, total)
+        self._refresh_status_text()
+
+    def _on_indexing_finished(self):
+        self._indexing_progress = None
+        if self._is_replaying:
+            self._is_replaying = False
+            status = self._pending_status
+            self._pending_status = None
+            if status is not None:
+                self._on_status_changed(status)
+            else:
+                self._refresh_data_tabs()
+        self._refresh_status_text()
 
     def _on_position_changed(self, position):
         lat = position.get("lat")
@@ -249,14 +328,20 @@ class MainWindow(QMainWindow):
         self.tab_exo.refresh()
 
     def _on_planet_updated(self, planet):
+        if self._is_replaying:
+            return
         self.lbl_planet.setText(f"Planet: {planet.get('body_name') or '--'}")
         self.tab_exo.refresh()
         self.tab_planets.refresh()
 
     def _on_sample_updated(self, sample):
+        if self._is_replaying:
+            return
         self.tab_exo.refresh()
 
     def _on_history_added(self, record):
+        if self._is_replaying:
+            return
         self.tab_history.refresh()
 
     def _on_error(self, message):
@@ -360,6 +445,8 @@ class MainWindow(QMainWindow):
 
     def _on_tab_changed(self, index):
         self.settings.set_current_tab(index)
+        if index == self.tabs.indexOf(self.tab_database):
+            self.tab_database.load()
 
     # --- actions ---
 
@@ -389,6 +476,9 @@ class MainWindow(QMainWindow):
         )
         self._settings_dialog = dlg
         if dlg.exec():
+            journal_dir = self.settings.journal_dir()
+            if journal_dir != self.monitor.journal_dir:
+                self.monitor.set_journal_dir(journal_dir)
             self.act_ontop.setChecked(self.settings.always_on_top())
             self.act_tray.setChecked(self.settings.minimize_to_tray())
             self.toggle_ontop(self.settings.always_on_top())
@@ -410,6 +500,10 @@ class MainWindow(QMainWindow):
     def toggle_overlay(self, enabled):
         self.settings.set_overlay_enabled(enabled)
         self.bio_overlay.set_enabled(enabled)
+
+    def set_oled_theme(self, enabled):
+        self.settings.set_theme("oled" if enabled else "classic")
+        self._apply_palette()
 
     def show_normal(self):
         self.showNormal()
