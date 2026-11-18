@@ -1,4 +1,4 @@
-"""Spansh station search for nearby Vista Genomics services."""
+# spansh station search for nearest Vista genocide service
 
 import json
 from urllib.error import HTTPError, URLError

@@ -1,4 +1,4 @@
-"""Surface distance calculations using great-circle (haversine) math."""
+# distance calculations for planets and species 
 
 import math
 

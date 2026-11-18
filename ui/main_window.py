@@ -1,4 +1,4 @@
-"""Main application window."""
+# the main application window 
 
 import os
 

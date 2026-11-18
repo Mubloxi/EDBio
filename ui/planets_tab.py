@@ -1,4 +1,4 @@
-"""Planets tab: scanned planets in the current system."""
+# planets tab: list of planets in the current system, with biological signals and predicted species
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor

@@ -1,4 +1,4 @@
-"""Narrow WebChannel API for viewing and backing up the application database."""
+# Narrow WebChannel API for viewing and backing up the application database
 
 import json
 import os

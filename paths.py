@@ -1,4 +1,4 @@
-"""Resolve resource files both during development and after PyInstaller bundling."""
+# resolves paths to resources and user data, whether running from source or a frozen executable
 
 import os
 import sys

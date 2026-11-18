@@ -1,4 +1,5 @@
-"""Build the Rust journal extension, TypeScript panel, and Windows executable."""
+# build in rust and package as a standalone executable with python
+
 
 import os
 import shutil

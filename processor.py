@@ -1,4 +1,4 @@
-"""Processes journal events into application state: planets, predictions, samples."""
+# Processes journal events into application state: planets, predictions, samples. totaly wasnt autto complete ;)
 
 import hashlib
 import json

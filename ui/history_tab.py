@@ -1,4 +1,4 @@
-"""History tab: previously discovered and sampled species."""
+# History tab previously discovered and sampled species
 
 import csv
 

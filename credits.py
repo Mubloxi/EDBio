@@ -1,4 +1,4 @@
-"""Vista Genomics credit calculations."""
+# vista genocide or sm calculator
 
 from species import SpeciesDB
 

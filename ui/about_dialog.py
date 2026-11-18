@@ -1,4 +1,3 @@
-"""About dialog."""
 
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QDialogButtonBox,

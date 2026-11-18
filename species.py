@@ -1,4 +1,4 @@
-"""Biological species reference data and prediction logic."""
+# species.py aka Biological Species Reference and calculations for EDBio
 
 import json
 import os

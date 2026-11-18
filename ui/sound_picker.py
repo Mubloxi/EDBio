@@ -1,4 +1,4 @@
-"""Reusable grouped sound selector and first-run audio prompt."""
+# sound picker dialog for first run
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItem, QStandardItemModel

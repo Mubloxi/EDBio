@@ -1,4 +1,4 @@
-"""Local SQLite storage for planets, history, samples, and processed events."""
+# sqlite db for storing scanned planets, species, and historyy and otther shhit
 
 import os
 import sqlite3

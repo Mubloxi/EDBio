@@ -1,4 +1,4 @@
-"""Foreground-only Elite Dangerous bio-signal overlay."""
+# Foreground only Elite Dangerous bio signal overlay.
 
 import ctypes
 import os

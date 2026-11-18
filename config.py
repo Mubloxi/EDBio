@@ -1,4 +1,4 @@
-"""Application configuration and persistent settings."""
+# app config and setttings 
 
 import os
 from PySide6.QtCore import QSettings

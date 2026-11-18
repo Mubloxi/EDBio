@@ -1,4 +1,4 @@
-"""Embedded TypeScript database management surface."""
+
 
 import json
 

@@ -1,4 +1,4 @@
-"""Detail dialog for a species."""
+# popup for species detail abd and shi
 
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QFormLayout, QLabel, QDialogButtonBox, QGroupBox,

@@ -1,4 +1,4 @@
-"""Settings dialog."""
+# setttings dialog
 
 import os
 

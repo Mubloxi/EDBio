@@ -1,4 +1,4 @@
-"""Exobiology tab: active planet, species table, sample tracking."""
+# Exobiology tab: active planet, species table, sample tracking
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (

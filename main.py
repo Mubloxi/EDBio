@@ -1,4 +1,4 @@
-"""Application entry point."""
+# app entry point
 
 import sys
 import os
